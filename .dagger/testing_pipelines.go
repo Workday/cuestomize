@@ -13,7 +13,7 @@ func (m *Cuestomize) UnitTest(
 ) error {
 
 	// Create a container to run the unit tests
-	container := repoBaseContainer(ctx, buildContext).
+	container := repoBaseContainer(buildContext).
 		WithExec([]string{"go", "test", "./..."})
 
 	exitCode, err := container.ExitCode(ctx)
@@ -41,14 +41,7 @@ func (m *Cuestomize) IntegrationTest(
 	defer registryService.Stop(ctx)
 
 	// Create a container to run the integration tests
-	exitCode, err := dag.Container().
-		From(GolangImage).
-		WithServiceBinding("registry", registryService).
-		WithWorkdir("/workspace").
-		WithFile("/workspace/go.mod", buildContext.File("go.mod")).
-		WithFile("/workspace/go.sum", buildContext.File("go.sum")).
-		WithExec([]string{"go", "mod", "download"}).
-		WithDirectory("/workspace", buildContext, DefaultExcludedOpts).
+	exitCode, err := repoBaseContainer(buildContext).
 		WithEnvVariable("INTEGRATION_TEST", "true").
 		WithEnvVariable("REGISTRY_HOST", "registry:5000").
 		WithExec([]string{"go", "test", "./integration"}).ExitCode(ctx)

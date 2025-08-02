@@ -28,7 +28,7 @@ func (m *Cuestomize) Build(
 ) (*dagger.Container, error) {
 
 	// Build stage: compile the Go binary
-	builder := repoBaseContainer(ctx, buildContext).
+	builder := repoBaseContainer(buildContext).
 		WithEnvVariable("CGO_ENABLED", "0").
 		WithEnvVariable("GO111MODULE", "on").
 		WithExec([]string{"go", "build", "-o", "cuestomize", "main.go"})
@@ -42,7 +42,41 @@ func (m *Cuestomize) Build(
 	return container, nil
 }
 
-func repoBaseContainer(ctx context.Context, buildContext *dagger.Directory) *dagger.Container {
+func (m *Cuestomize) Publish(
+	ctx context.Context,
+	username string,
+	password *dagger.Secret,
+	// +defaultPath=./
+	buildContext *dagger.Directory,
+	// +default="ghcr.io"
+	registry string,
+	repository string,
+	tag string,
+	// +default=false
+	alsoTagAsLatest bool,
+) error {
+	// Publish stage: push the built image to a registry
+	container, err := m.Build(ctx, buildContext)
+	if err != nil {
+		return err
+	}
+	container = container.WithRegistryAuth(registry, username, password)
+
+	tags := []string{tag}
+	if alsoTagAsLatest {
+		tags = append(tags, "latest")
+	}
+	for _, t := range tags {
+		_, err := container.Publish(ctx, registry+"/"+repository+":"+t)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func repoBaseContainer(buildContext *dagger.Directory) *dagger.Container {
 	// Create a container to run the tests
 	return dag.Container().
 		From(GolangImage).

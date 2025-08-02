@@ -15,6 +15,9 @@ import (
 )
 
 const (
+	// Version is the version of the Cuestomize tool.
+	Version = "0.0.1"
+
 	// LogLevelEnvVar is the name of the environment variable that can be used to set the log level.
 	LogLevelEnvVar = "LOG_LEVEL"
 )
