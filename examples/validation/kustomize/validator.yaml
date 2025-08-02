@@ -1,0 +1,16 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: Validator
+metadata:
+  name: example
+  annotations:
+    config.cuestomize.io/validator: "true" # tells the function to run as a validator
+    config.kubernetes.io/local-config: "true"
+    config.kubernetes.io/function: |
+      container:
+        image: cuestomize:latest
+includes:
+# all deployments in the example-namespace namespace
+- group: apps
+  version: v1
+  kind: Deployment
+  namespace: example-namespace

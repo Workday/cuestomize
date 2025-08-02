@@ -1,0 +1,6 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: KrmInput
+metadata:
+  name: ok-no-includes
+input:
+  testField: "test-value"

@@ -1,0 +1,11 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: KrmInput
+metadata:
+  name: ok-no-matching-includes
+input:
+  testField: "test-value"
+includes:
+- version: "v1"
+  kind: "ConfigMap"
+  name: "test-configmap"
+  namespace: "test-namespace"

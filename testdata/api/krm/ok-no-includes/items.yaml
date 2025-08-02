@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: not-to-be-included
+  namespace: test-namespace
+data:
+  key: value

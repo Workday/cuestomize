@@ -1,0 +1,6 @@
+.vscode/*
+.go-version
+cover.out
+
+**/cue.mod/gen/*
+!**/cue.mod/module.cue

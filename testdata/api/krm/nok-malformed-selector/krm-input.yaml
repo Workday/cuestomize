@@ -1,0 +1,11 @@
+apiVersion: --
+kind: --
+metadata:
+  name: nok-malformed-selector
+input:
+  testField: "test-value"
+includes:
+- kind: "ConfigMap"
+  group: "*\\\\11" # invalid regex
+  name: ""
+  namespace: "test-namespace"

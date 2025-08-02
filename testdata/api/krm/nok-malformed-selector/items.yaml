@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ""
+  namespace: test-namespace
+data:
+  key: value
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-serviceaccount
+  namespace: test-namespace

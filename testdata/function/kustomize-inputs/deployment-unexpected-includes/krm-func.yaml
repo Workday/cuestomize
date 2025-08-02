@@ -1,0 +1,15 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: NginxDeployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+input:
+  name: nginx-deployment
+  namespace: nginx
+  image: nginx:latest
+  configMapName: example-configmap
+includes:
+- version: v1
+  kind: Service
+  name: example-service
+  namespace: example-namespace

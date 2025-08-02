@@ -1,0 +1,10 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: WrongKind
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+input:
+  name: nginx-deployment
+  namespace: nginx
+  image: nginx:latest
+  configMapName: example-configmap

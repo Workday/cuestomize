@@ -1,0 +1,16 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: Cuestomization
+metadata:
+  name: example-cuestomization
+input:
+  configMapName: example-configmap
+includes:
+- version: v1
+  group: apps
+  kind: Deployment
+  name: example-deployment
+  namespace: example-namespace
+- version: v1
+  kind: Service
+  name: example-service
+  namespace: example-namespace

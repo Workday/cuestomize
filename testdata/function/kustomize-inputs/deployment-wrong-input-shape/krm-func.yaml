@@ -1,0 +1,11 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: NginxDeployment
+metadata:
+  name: nginx-deployment
+  namespace: nginx
+input:
+  unexpectedField: "This field is not expected in the input"
+  name: nginx-deployment
+  namespace: nginx
+  image: nginx:latest
+  configMapName: example-configmap

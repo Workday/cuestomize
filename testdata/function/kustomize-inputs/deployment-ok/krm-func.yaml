@@ -1,0 +1,8 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: NginxDeployment
+metadata:
+  name: nginx-deployment
+input:
+  deploymentName: nginx-deployment
+  namespace: nginx
+  image: nginx:latest

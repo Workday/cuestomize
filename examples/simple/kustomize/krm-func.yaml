@@ -1,0 +1,21 @@
+apiVersion: cuestomize.dev/v1alpha1
+kind: Cuestomization
+metadata:
+  name: example
+  annotations:
+    config.kubernetes.io/local-config: "true"
+    config.kubernetes.io/function: |
+      container:
+        image: cuestomize/cuestomize-examples-simple:latest
+input:
+  configMapName: example-configmap
+includes:
+- group: apps
+  version: v1
+  kind: Deployment
+  name: example-deployment
+  namespace: example-namespace
+- version: v1
+  kind: Service
+  name: example-service
+  namespace: example-namespace

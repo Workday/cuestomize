@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: example-deployment-2 # change to deployment-2 to trigger validation failure
+  namespace: example-namespace
+  labels:
+    app: example-app-2
+    c: s
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: example-app-2 # change value to trigger validation failure
+  template:
+    metadata:
+      labels:
+        app: example-app-2 # change value to trigger validation failure
+        # a: b # uncomment to trigger validation failure
+    spec:
+      containers:
+      - name: main
+        image: example-image:latest
+        ports:
+        - containerPort: 8080
+          name: http
+        env:
+        - name: EXAMPLE_ENV_VAR
+          value: "example-value"
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "500m"
+          limits:
+            memory: "256Mi"
+            cpu: "1"
