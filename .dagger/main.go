@@ -28,22 +28,27 @@ func (m *Cuestomize) Build(
 ) (*dagger.Container, error) {
 
 	// Build stage: compile the Go binary
-	builder := dag.Container().
-		From("golang:1.24").
-		WithWorkdir("/workspace").
-		WithFile("/workspace/go.mod", buildContext.File("go.mod")).
-		WithFile("/workspace/go.sum", buildContext.File("go.sum")).
-		WithExec([]string{"go", "mod", "download"}).
-		WithDirectory("/workspace", buildContext).
+	builder := repoBaseContainer(ctx, buildContext).
 		WithEnvVariable("CGO_ENABLED", "0").
 		WithEnvVariable("GO111MODULE", "on").
 		WithExec([]string{"go", "build", "-o", "cuestomize", "main.go"})
 
 	// Final stage: create the runtime container with distroless
 	container := dag.Container().
-		From("gcr.io/distroless/static:latest").
+		From(DistrolessStaticImage).
 		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
 		WithEntrypoint([]string{"/usr/local/bin/cuestomize"})
 
 	return container, nil
+}
+
+func repoBaseContainer(ctx context.Context, buildContext *dagger.Directory) *dagger.Container {
+	// Create a container to run the tests
+	return dag.Container().
+		From(GolangImage).
+		WithWorkdir("/workspace").
+		WithFile("/workspace/go.mod", buildContext.File("go.mod")).
+		WithFile("/workspace/go.sum", buildContext.File("go.sum")).
+		WithExec([]string{"go", "mod", "download"}).
+		WithDirectory("/workspace", buildContext, DefaultExcludedOpts)
 }
