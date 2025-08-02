@@ -42,7 +42,7 @@ func (m *Cuestomize) Build(
 	return container, nil
 }
 
-func (m *Cuestomize) Publish(
+func (m *Cuestomize) BuildAndPublish(
 	ctx context.Context,
 	username string,
 	password *dagger.Secret,
