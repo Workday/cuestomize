@@ -11,7 +11,7 @@ import (
 )
 
 // FetchFromOCIRegistry fetches an artifact from an OCI registry and stores it in the specified working directory.
-func FetchFromOCIRegistry(ctx context.Context, client *remote.Client, workingDir, reg, repo, tag string, plainHTTP bool) error {
+func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir, reg, repo, tag string, plainHTTP bool) error {
 	fs, err := file.New(workingDir)
 	if err != nil {
 		log.Error().Err(err).Str("workingDir", workingDir).Msg("failed to create file store")
@@ -24,7 +24,7 @@ func FetchFromOCIRegistry(ctx context.Context, client *remote.Client, workingDir
 		return err
 	}
 	if client != nil {
-		repository.Client = *client
+		repository.Client = client
 	}
 	repository.PlainHTTP = plainHTTP
 
