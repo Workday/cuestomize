@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	"github.com/Workday/cuestomize/internal/pkg/testloaders"
+	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
 )
 
@@ -44,8 +44,8 @@ func TestKRMInput_ExtractIncludes(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			krmInput := testloaders.LoadFromFile[KRMInput](t, tt.testdataDir+"/"+TestKRMInputFileName)
-			items := testloaders.LoadResourceList(t, tt.testdataDir+"/"+TestKRMInputFileName, tt.testdataDir+"/"+TestItemsFileName)
+			krmInput := testhelpers.LoadFromFile[KRMInput](t, tt.testdataDir+"/"+TestKRMInputFileName)
+			items := testhelpers.LoadResourceList(t, tt.testdataDir+"/"+TestKRMInputFileName, tt.testdataDir+"/"+TestItemsFileName)
 
 			includes, err := ExtractIncludes(krmInput, items)
 

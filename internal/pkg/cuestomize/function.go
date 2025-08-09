@@ -1,6 +1,7 @@
 package cuestomize
 
 import (
+	"context"
 	"fmt"
 
 	"cuelang.org/go/cue"
@@ -10,6 +11,7 @@ import (
 	"cuelang.org/go/encoding/yaml"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
+	"github.com/Workday/cuestomize/internal/pkg/cuestomize/oci"
 	"github.com/rs/zerolog/log"
 
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
@@ -55,6 +57,13 @@ type KRMFunction = func([]*kyaml.RNode) ([]*kyaml.RNode, error)
 func newCuestomizeFunctionWithPath(config *api.KRMInput, resourcesPath *string) KRMFunction {
 	return func(items []*kyaml.RNode) ([]*kyaml.RNode, error) {
 		ctx := cuecontext.New()
+
+		if config.RemoteModule != nil {
+			log.Debug().Msg("fetching CUE model from OCI registry")
+			if err := oci.FetchFromRegistry(context.TODO(), config, items, *resourcesPath); err != nil {
+				return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
+			}
+		}
 
 		includes, err := api.ExtractIncludes(config, items)
 		if err != nil {

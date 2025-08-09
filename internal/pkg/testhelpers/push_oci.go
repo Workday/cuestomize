@@ -1,4 +1,4 @@
-package integration
+package testhelpers
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"oras.land/oras-go/v2/registry/remote"
 )
 
-func PushDirectoryToOCIRegistry_Helper(t *testing.T, reference, rootDirectory, artifactType, tag string, client remote.Client) ocispec.Descriptor {
+func PushDirectoryToOCIRegistry_T(t *testing.T, reference, rootDirectory, artifactType, tag string, client remote.Client) ocispec.Descriptor {
 	t.Helper()
 
 	descriptor, err := PushDirectoryToOCIRegistry(t.Context(), reference, rootDirectory, artifactType, tag, client)

@@ -17,5 +17,5 @@ Run:
 ```bash
 # kustomize build <PATH_TO_KUSTOMIZATION_FILE> --enable-alpha-plugins
 # Example:
-kustomize build . --enable-alpha-plugins
+kustomize build . --enable-alpha-plugins --network
 ```

@@ -5,36 +5,31 @@ import (
 	"path/filepath"
 	"testing"
 
+	"dagger/cuestomize/shared"
+
 	"github.com/Workday/cuestomize/internal/pkg/fetcher"
+	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
 
-const (
-	integrationTestingVarName = "INTEGRATION_TEST"
-	registryHostVarName       = "REGISTRY_HOST"
-	registryAuthHostVarName   = "REGISTRY_AUTH_HOST"
-	registryUsernameVarName   = "REGISTRY_USERNAME"
-	registryPasswordVarName   = "REGISTRY_PASSWORD"
-)
-
 func Test_FetchFromRegistry(t *testing.T) {
-	if os.Getenv(integrationTestingVarName) != "true" {
-		t.Skip("Skipping test because INTEGRATION_TEST is not set")
+	if os.Getenv(shared.IntegrationTestingVarName) != "true" {
+		t.Skipf("Skipping test because %s is not set", shared.IntegrationTestingVarName)
 	}
 
-	registryNoAuthHost := os.Getenv(registryHostVarName)
+	registryNoAuthHost := os.Getenv(shared.RegistryHostVarName)
 	if registryNoAuthHost == "" {
-		t.Fatalf("Environment variable %s is not set", registryHostVarName)
+		t.Fatalf("Environment variable %s is not set", shared.RegistryHostVarName)
 	}
-	registryWithAuthHost := os.Getenv(registryAuthHostVarName)
+	registryWithAuthHost := os.Getenv(shared.RegistryAuthHostVarName)
 	if registryWithAuthHost == "" {
-		t.Fatalf("Environment variable %s is not set", registryAuthHostVarName)
+		t.Fatalf("Environment variable %s is not set", shared.RegistryAuthHostVarName)
 	}
 
-	username := os.Getenv(registryUsernameVarName)
-	password := os.Getenv(registryPasswordVarName)
+	username := os.Getenv(shared.RegistryUsernameVarName)
+	password := os.Getenv(shared.RegistryPasswordVarName)
 
 	tt := []struct {
 		name          string
@@ -82,7 +77,7 @@ func Test_FetchFromRegistry(t *testing.T) {
 			tempDir := t.TempDir() // Directory to store the fetched artifact
 
 			// push testdata/sample-module to the registry
-			_ = PushDirectoryToOCIRegistry_Helper(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client)
+			_ = testhelpers.PushDirectoryToOCIRegistry_T(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client)
 
 			// Fetch the module from the registry
 			err := fetcher.FetchFromOCIRegistry(ctx, tc.client, tempDir, tc.registryHost, tc.repo, tc.tag, tc.plainHTTP)

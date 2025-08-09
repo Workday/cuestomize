@@ -1,4 +1,4 @@
-package testloaders
+package testhelpers
 
 import (
 	"bytes"

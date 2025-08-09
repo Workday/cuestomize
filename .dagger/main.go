@@ -26,16 +26,13 @@ func (m *Cuestomize) Build(
 	// +defaultPath=./
 	buildContext *dagger.Directory,
 ) (*dagger.Container, error) {
-
 	// Build stage: compile the Go binary
-	builder := repoBaseContainer(buildContext).
-		WithEnvVariable("CGO_ENABLED", "0").
-		WithEnvVariable("GO111MODULE", "on").
-		WithExec([]string{"go", "build", "-o", "cuestomize", "main.go"})
+	builder := cuestomizeBuilderContainer(buildContext)
 
 	// Final stage: create the runtime container with distroless
 	container := dag.Container().
 		From(DistrolessStaticImage).
+		WithDirectory("/cue-resources", dag.Directory(), dagger.ContainerWithDirectoryOpts{Owner: "nobody"}).
 		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
 		WithEntrypoint([]string{"/usr/local/bin/cuestomize"})
 
@@ -84,13 +81,29 @@ func (m *Cuestomize) BuildAndPublish(
 	return nil
 }
 
-func repoBaseContainer(buildContext *dagger.Directory) *dagger.Container {
+// repoBaseContainer creates a container with the repository files in it and go dependencies installed.
+// The working directory is set to `/workspace` and contains the root of the repository.
+func repoBaseContainer(buildContext *dagger.Directory, excludedOpts *dagger.ContainerWithDirectoryOpts) *dagger.Container {
+	var exOpts dagger.ContainerWithDirectoryOpts
+	if excludedOpts == nil {
+		exOpts = DefaultExcludedOpts
+	}
 	// Create a container to run the tests
 	return dag.Container().
 		From(GolangImage).
 		WithWorkdir("/workspace").
 		WithFile("/workspace/go.mod", buildContext.File("go.mod")).
 		WithFile("/workspace/go.sum", buildContext.File("go.sum")).
+		WithFile("/workspace/.dagger/go.mod", buildContext.File(".dagger/go.mod")).
+		WithFile("/workspace/.dagger/go.sum", buildContext.File(".dagger/go.sum")).
 		WithExec([]string{"go", "mod", "download"}).
-		WithDirectory("/workspace", buildContext, DefaultExcludedOpts)
+		WithDirectory("/workspace", buildContext, exOpts)
+}
+
+// cuestomizeBuilderContainer returns a container that can be used to build the cuestomize binary.
+func cuestomizeBuilderContainer(buildContext *dagger.Directory) *dagger.Container {
+	return repoBaseContainer(buildContext, nil).
+		WithEnvVariable("CGO_ENABLED", "0").
+		WithEnvVariable("GO111MODULE", "on").
+		WithExec([]string{"go", "build", "-o", "cuestomize", "main.go"})
 }

@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/Workday/cuestomize/api"
-	"github.com/Workday/cuestomize/internal/pkg/testloaders"
+	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"sigs.k8s.io/kustomize/kyaml/resid"
 
 	"github.com/stretchr/testify/require"
@@ -103,9 +103,9 @@ func TestKRMFunction(t *testing.T) {
 			krmFuncPath := tt.TestdataKustomizePath + "/" + KrmFunPath
 			itemsPath := tt.TestdataKustomizePath + "/" + ItemsPath
 
-			config := testloaders.LoadFromFile[api.KRMInput](t, krmFuncPath)
+			config := testhelpers.LoadFromFile[api.KRMInput](t, krmFuncPath)
 
-			items := testloaders.LoadResourceList(t, krmFuncPath, itemsPath)
+			items := testhelpers.LoadResourceList(t, krmFuncPath, itemsPath)
 
 			krmFunc, err := NewBuilder().SetResourcesPath(tt.TestdataCUEModelPath).SetConfig(config).Build()
 			require.NoError(t, err, "KRMFuncBuilder failed to build KRM function")

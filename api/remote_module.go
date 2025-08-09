@@ -1,15 +1,12 @@
 package api
 
+import "sigs.k8s.io/kustomize/api/types"
+
 type RemoteModule struct {
-	Repo string `json:"repo"`
-	Tag  string `json:"tag"`
+	Registry string `yaml:"registry" json:"registry"`
+	Repo     string `yaml:"repo" json:"repo"`
+	Tag      string `yaml:"tag" json:"tag"`
 
-	Auth *RemoteAuth `json:"auth,omitempty"`
-}
-
-type RemoteAuth struct {
-	Username     string `json:"username"`
-	Password     string `json:"password"`
-	RefreshToken string `json:"refreshToken,omitempty"`
-	AccessToken  string `json:"accessToken,omitempty"`
+	Auth      *types.Selector `yaml:"auth,omitempty" json:"auth,omitempty"`
+	PlainHTTP bool            `yaml:"plainHTTP,omitempty" json:"plainHTTP,omitempty"`
 }
