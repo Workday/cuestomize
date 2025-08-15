@@ -13,7 +13,11 @@ func (m *Cuestomize) GoGenerate(
 ) *dagger.Container {
 	cue := dag.Container().From(CuelangImage)
 
-	container := repoBaseContainer(buildContext, nil).
+	container := repoBaseContainer(buildContext, &dagger.ContainerWithDirectoryOpts{
+		Exclude: []string{
+			".go-version", "README.md", ".vscode",
+		},
+	}).
 		WithFile(
 			"/usr/bin/cue",
 			cue.File("/usr/bin/cue"),

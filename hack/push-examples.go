@@ -25,7 +25,7 @@ func main() {
 	if err := setupLogging(); err != nil {
 		panic(fmt.Errorf("failed to setup logging: %w", err))
 	}
-
+	log.Debug().Msg("Starting to push examples to OCI registry")
 	username := os.Getenv("OCI_USERNAME")
 	if username == "" {
 		panic("OCI_USERNAME environment variable is not set")
@@ -51,15 +51,19 @@ func main() {
 	tag := os.Args[1]
 
 	entries, err := os.ReadDir(examplesDir)
-	log.Trace().Int("entries", len(entries)).Msg("Found entries in examples directory")
 	if err != nil {
 		panic(fmt.Errorf("failed to read examples directory: %w", err))
 	}
+	log.Trace().Int("entries", len(entries)).Msg("Found entries in examples directory")
 
 	repositoryDirMap := make(map[string]string)
 
 	for _, entry := range entries {
-		if !entry.IsDir() || entry.Name() == "*" {
+		if !entry.IsDir() {
+			continue
+		}
+		if _, err := os.Stat(path.Join(examplesDir, entry.Name(), "cue", "cue.mod")); err != nil {
+			log.Warn().Err(err).Str("entry", entry.Name()).Msg("Skipping example without cue/cue.mod file")
 			continue
 		}
 		log.Trace().Str("entry", entry.Name()).Msg("Found example in directory")

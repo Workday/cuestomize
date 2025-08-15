@@ -24,7 +24,9 @@ func (m *Cuestomize) PublishExamples(
 	tag string,
 	// +optional
 	latest bool,
-) (*dagger.Container, error) {
+	// +default="info"
+	logLevel string,
+) *dagger.File {
 	container := m.GoGenerate(ctx, buildContext)
 
 	latestStr := "false"
@@ -32,11 +34,16 @@ func (m *Cuestomize) PublishExamples(
 		latestStr = "true"
 	}
 	container = container.
+		WithEnvVariable("LOG_LEVEL", logLevel).
 		WithEnvVariable("OCI_REGISTRY", registry).
 		WithEnvVariable("OCI_REPOSITORY_PREFIX", repositoryPrefix).
 		WithEnvVariable("IS_LATEST", latestStr).
 		WithEnvVariable("OCI_USERNAME", username).
 		WithSecretVariable("OCI_PASSWORD", password).
-		WithExec([]string{"go", "run", "hack/push-examples.go", tag})
-	return container.Sync(ctx)
+		WithExec([]string{"go", "run", "hack/push-examples.go", tag}, dagger.ContainerWithExecOpts{
+			RedirectStderr: "stderr.log",
+		})
+
+	file := container.File("stderr.log")
+	return file
 }

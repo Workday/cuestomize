@@ -17,7 +17,7 @@ var (
 	DefaultExcludedOpts = dagger.ContainerWithDirectoryOpts{
 		Exclude: []string{
 			".go-version", "README.md",
-			".vscode", "examples/**",
+			".vscode", "examples",
 		},
 	}
 )
