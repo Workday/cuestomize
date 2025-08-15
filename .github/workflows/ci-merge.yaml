@@ -67,6 +67,4 @@ jobs:
       with:
         version: "0.18.14"
         verb: call
-        args: |
-          publish-examples --username="$GITHUB_USER" \
-            --password=env:GITHUB_TOKEN
+        args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN
