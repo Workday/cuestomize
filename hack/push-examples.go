@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 
 	"dagger/cuestomize/shared/oci"
 
@@ -42,6 +43,7 @@ func main() {
 	if repositoryPrefix == "" {
 		panic("OCI_REPOSITORY_PREFIX environment variable is not set")
 	}
+	repositoryPrefix = strings.ToLower(repositoryPrefix)
 	latest := os.Getenv("IS_LATEST") == "true"
 	if len(os.Args) < 2 {
 		panic("pass tag as argument")
@@ -90,10 +92,10 @@ func main() {
 			repoWithTag := repoName + ":" + t
 			log.Debug().Str("repoWithTag", repoWithTag).Msg("Pushing to OCI registry")
 			_, err := oci.PushDirectoryToOCIRegistry(ctx, repoWithTag, dir, CueModuleArtifactType, t, client, false)
-			log.Info().Str("repoWithTag", repoWithTag).Msg("Pushed to OCI registry")
 			if err != nil {
 				panic(fmt.Errorf("failed to push %s to OCI registry: %w", repoWithTag, err))
 			}
+			log.Info().Str("repoWithTag", repoWithTag).Msg("Pushed to OCI registry")
 			pushedRefs = append(pushedRefs, repoWithTag)
 		}
 	}
