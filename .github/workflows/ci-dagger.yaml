@@ -64,3 +64,26 @@ jobs:
         version: "0.18.14"
         verb: call
         args: build
+
+  publish:
+    name: Build And Publish
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Dagger Build And Publish
+      uses: dagger/dagger-for-github@8.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_USER: ${{ github.actor }}
+        TAG: dev
+        LATEST: "false"
+        REPOSITORY: workday/cuestomize
+      with:
+        version: "0.18.14"
+        verb: call
+        args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
