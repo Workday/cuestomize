@@ -22,7 +22,7 @@ includes:
   namespace: example-namespace
 remoteModule:
   registry: ghcr.io
-  repo: workday/cuestomize/examples/simple
+  repo: workday/cuestomize/cuemodules/cuestomize-examples-simple
   tag: latest
   auth:
     kind: Secret

@@ -16,7 +16,7 @@ includes:
   namespace: example-namespace
 remoteModule:
   registry: ghcr.io
-  repo: workday/cuestomize/examples/validation
+  repo: workday/cuestomize/cuemodules/cuestomize-examples-validation
   tag: latest
   auth:
     kind: Secret

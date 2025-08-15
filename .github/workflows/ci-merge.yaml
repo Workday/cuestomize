@@ -64,7 +64,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
+        REPOSITORY_PREFIX: ${{ github.repository }}/cuemodules/cuestomize-examples
       with:
         version: "0.18.14"
         verb: call
-        args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN
+        args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --repositoryPrefix="$REPOSITORY_PREFIX"
