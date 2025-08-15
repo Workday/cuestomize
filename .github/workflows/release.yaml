@@ -34,18 +34,20 @@ jobs:
 
     # only tag as latest if the release is set to latest
     - name: set tag as latest
+      id: set-latest
       run: |
+        LATEST="false"
         if [ "${{ github.event.release.prerelease }}" == "false" ]; then
-          echo -n 'latest=true' >> $GITHUB_OUTPUT
-        else
-          echo -n 'latest=false' >> $GITHUB_OUTPUT
+          LATEST="true"
         fi
+        echo -n "latest=${LATEST}" >> $GITHUB_OUTPUT
 
   publish:
     name: Build And Publish
     runs-on: ubuntu-latest
     permissions:
       packages: write
+    needs: prep
 
     steps:
     - name: Checkout repository
@@ -69,6 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       packages: write
+    needs: prep
 
     steps:
     - name: Checkout repository
