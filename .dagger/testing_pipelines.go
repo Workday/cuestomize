@@ -144,6 +144,37 @@ func (m *Cuestomize) RunTests(
 	return nil
 }
 
+func (m *Cuestomize) TestWithCoverage(
+	ctx context.Context,
+	// +defaultPath=./
+	buildContext *dagger.Directory,
+) (*dagger.File, error) {
+	// Setup registryNoAuth without authentication
+	registryService, err := setupRegistryServiceNoAuth(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start registry service: %w", err)
+	}
+	defer registryService.Stop(ctx)
+
+	// Setup registryWithAuth with authentication
+	username := "registryuser"
+	password := "password"
+	registryWithAuthService, err := setupRegistryServiceWithAuth(ctx, username, password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to start registry with auth service: %w", err)
+	}
+	defer registryWithAuthService.Stop(ctx)
+
+	// Create a container to run the integration tests
+	container := testContainerWithRegistryServices(
+		buildContext, registryService, registryWithAuthService, username, password).
+		WithEnvVariable(shared.IntegrationTestingVarName, "true").
+		WithExec([]string{"go", "test", "./...", "-coverprofile=coverage.out"})
+
+	coverageFile := container.File("coverage.out")
+	return coverageFile, nil
+}
+
 func setupRegistryServiceNoAuth(ctx context.Context) (*dagger.Service, error) {
 	registryNoAuth := dag.Container().From(RegistryImage).WithExposedPort(5000)
 	return registryNoAuth.AsService().Start(ctx)

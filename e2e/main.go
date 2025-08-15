@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"dagger/cuestomize/shared"
+	"dagger/cuestomize/shared/oci"
 
-	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
 
@@ -31,18 +31,20 @@ func main() {
 	tag := "latest"
 	artifactType := "application/vnd.cuestomize.module.v1+json"
 
+	plainHTTP := true
+
 	// push to registry with no authentication
-	if _, err := testhelpers.PushDirectoryToOCIRegistry(ctx, registryNoAuthHost+"/sample-module:"+tag, "e2e/testdata/cue", artifactType, tag, nil); err != nil {
+	if _, err := oci.PushDirectoryToOCIRegistry(ctx, registryNoAuthHost+"/sample-module:"+tag, "e2e/testdata/cue", artifactType, tag, nil, plainHTTP); err != nil {
 		panic(err)
 	}
 
 	// push to registry with authentication
-	if _, err := testhelpers.PushDirectoryToOCIRegistry(ctx, registryWithAuthHost+"/sample-module:"+tag, "e2e/testdata/cue", artifactType, tag, &auth.Client{
+	if _, err := oci.PushDirectoryToOCIRegistry(ctx, registryWithAuthHost+"/sample-module:"+tag, "e2e/testdata/cue", artifactType, tag, &auth.Client{
 		Credential: auth.StaticCredential(registryWithAuthHost, auth.Credential{
 			Username: username,
 			Password: password,
 		}),
-	}); err != nil {
+	}, plainHTTP); err != nil {
 		panic(err)
 	}
 }

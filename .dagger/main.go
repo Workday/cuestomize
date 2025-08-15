@@ -17,79 +17,41 @@ package main
 import (
 	"context"
 	"dagger/cuestomize/internal/dagger"
+	"strings"
 )
 
 type Cuestomize struct{}
 
-func (m *Cuestomize) Build(
+func (m *Cuestomize) CuestomizeVersion(
 	ctx context.Context,
 	// +defaultPath=./
-	buildContext *dagger.Directory,
-) (*dagger.Container, error) {
-	// Build stage: compile the Go binary
-	builder := cuestomizeBuilderContainer(buildContext)
-
-	// Final stage: create the runtime container with distroless
-	container := dag.Container().
-		From(DistrolessStaticImage).
-		WithDirectory("/cue-resources", dag.Directory(), dagger.ContainerWithDirectoryOpts{Owner: "nobody"}).
-		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
-		WithEntrypoint([]string{"/usr/local/bin/cuestomize"})
-
-	return container, nil
-}
-
-func (m *Cuestomize) BuildAndPublish(
-	ctx context.Context,
-	username string,
-	password *dagger.Secret,
-	// +defaultPath=./
-	buildContext *dagger.Directory,
-	// +default="ghcr.io"
-	registry string,
-	repository string,
-	tag string,
-	// +default=false
-	alsoTagAsLatest bool,
+	src *dagger.Directory,
+	// +default=version
+	filePath string,
 ) error {
-	// lint
-	_, err := m.GolangciLintRun(ctx, buildContext, GolangciLintDefaultVersion, "5m")
-
-	// tests
-	if err := m.RunTests(ctx, buildContext); err != nil {
-		return err
-	}
-
-	// Publish stage: push the built image to a registry
-	container, err := m.Build(ctx, buildContext)
+	version, err := cuestomizeBuilderContainer(src).
+		WithExec([]string{"/workspace/cuestomize", "--version"}).Stdout(ctx)
 	if err != nil {
 		return err
 	}
-	container = container.WithRegistryAuth(registry, username, password)
 
-	tags := []string{tag}
-	if alsoTagAsLatest {
-		tags = append(tags, "latest")
-	}
-	for _, t := range tags {
-		_, err := container.Publish(ctx, registry+"/"+repository+":"+t)
-		if err != nil {
-			return err
-		}
-	}
+	version = strings.Trim(version, "\n ")
+	version = "diomaialw"
 
-	return nil
+	_, err = dag.File("version", version).Export(ctx, filePath)
+	return err
 }
 
 // repoBaseContainer creates a container with the repository files in it and go dependencies installed.
 // The working directory is set to `/workspace` and contains the root of the repository.
-func repoBaseContainer(buildContext *dagger.Directory, excludedOpts *dagger.ContainerWithDirectoryOpts) *dagger.Container {
+func repoBaseContainer(buildContext *dagger.Directory, excludedOpts *dagger.ContainerWithDirectoryOpts, containerOpts ...dagger.ContainerOpts) *dagger.Container {
 	var exOpts dagger.ContainerWithDirectoryOpts
 	if excludedOpts == nil {
 		exOpts = DefaultExcludedOpts
 	}
+
 	// Create a container to run the tests
-	return dag.Container().
+	return dag.Container(containerOpts...).
 		From(GolangImage).
 		WithWorkdir("/workspace").
 		WithFile("/workspace/go.mod", buildContext.File("go.mod")).
@@ -101,8 +63,8 @@ func repoBaseContainer(buildContext *dagger.Directory, excludedOpts *dagger.Cont
 }
 
 // cuestomizeBuilderContainer returns a container that can be used to build the cuestomize binary.
-func cuestomizeBuilderContainer(buildContext *dagger.Directory) *dagger.Container {
-	return repoBaseContainer(buildContext, nil).
+func cuestomizeBuilderContainer(buildContext *dagger.Directory, containerOpts ...dagger.ContainerOpts) *dagger.Container {
+	return repoBaseContainer(buildContext, nil, containerOpts...).
 		WithEnvVariable("CGO_ENABLED", "0").
 		WithEnvVariable("GO111MODULE", "on").
 		WithExec([]string{"go", "build", "-o", "cuestomize", "main.go"})

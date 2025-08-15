@@ -1,24 +1,23 @@
-name: CI (Dagger)
+name: CI (Merge)
 
 on:
-  pull_request:
-    types: [ review_requested, ready_for_review ]
-
+  push:
+    branches: [ main ]
 jobs:
-  lint:
-    name: Golangci-lint
+  build:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Run pipeline
+    - name: Build image
       uses: dagger/dagger-for-github@8.0.0
       with:
         version: "0.18.14"
         verb: call
-        args: golangci-lint-run
+        args: build
 
   test:
     name: Test
@@ -50,17 +49,24 @@ jobs:
         verb: call
         args: e-2-e-test
 
-  build:
-    name: Build
+  publish-examples:
+    name: Publish Examples
     runs-on: ubuntu-latest
+    permissions:
+      packages: write
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Build image
+    - name: Run pipeline
       uses: dagger/dagger-for-github@8.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_USER: ${{ github.actor }}
       with:
         version: "0.18.14"
         verb: call
-        args: build
+        args: |
+          publish-examples --username="$GITHUB_USER" \
+            --password=env:GITHUB_TOKEN

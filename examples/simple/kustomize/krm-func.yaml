@@ -6,7 +6,7 @@ metadata:
     config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
-        image: ghcr.io/Workday/cuestomize:latest
+        image: ghcr.io/workday/cuestomize:latest
         network: true
 input:
   configMapName: example-configmap
@@ -22,7 +22,7 @@ includes:
   namespace: example-namespace
 remoteModule:
   registry: ghcr.io
-  repo: Workday/cuestomize/cuemodules/cuestomize-examples-simple
+  repo: workday/cuestomize/examples/simple
   tag: latest
   auth:
     kind: Secret

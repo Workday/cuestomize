@@ -1,4 +1,4 @@
-package integration
+package fetcher
 
 import (
 	"os"
@@ -7,7 +7,6 @@ import (
 
 	"dagger/cuestomize/shared"
 
-	"github.com/Workday/cuestomize/internal/pkg/fetcher"
 	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
 	"oras.land/oras-go/v2/registry/remote"
@@ -45,7 +44,7 @@ func Test_FetchFromRegistry(t *testing.T) {
 	}{
 		{
 			name:          "fetch from registry without auth",
-			testdataDir:   "testdata/sample-module",
+			testdataDir:   "../../../testdata/integration/sample-module",
 			registryHost:  registryNoAuthHost,
 			repo:          "sample-module",
 			tag:           "latest",
@@ -55,7 +54,7 @@ func Test_FetchFromRegistry(t *testing.T) {
 		},
 		{
 			name:         "fetch from registry with auth",
-			testdataDir:  "testdata/sample-module",
+			testdataDir:  "../../../testdata/integration/sample-module",
 			registryHost: registryWithAuthHost,
 			repo:         "sample-module",
 			tag:          "latest",
@@ -77,10 +76,10 @@ func Test_FetchFromRegistry(t *testing.T) {
 			tempDir := t.TempDir() // Directory to store the fetched artifact
 
 			// push testdata/sample-module to the registry
-			_ = testhelpers.PushDirectoryToOCIRegistry_T(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client)
+			_ = testhelpers.PushDirectoryToOCIRegistry_T(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client, tc.plainHTTP)
 
 			// Fetch the module from the registry
-			err := fetcher.FetchFromOCIRegistry(ctx, tc.client, tempDir, tc.registryHost, tc.repo, tc.tag, tc.plainHTTP)
+			err := FetchFromOCIRegistry(ctx, tc.client, tempDir, tc.registryHost, tc.repo, tc.tag, tc.plainHTTP)
 			if !tc.shouldError {
 				require.NoError(t, err, "failed to fetch module from OCI registry")
 				// verify that tempDir contains the expected files

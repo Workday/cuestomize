@@ -7,10 +7,17 @@ metadata:
     config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
-        image: cuestomize:latest
+        image: ghcr.io/workday/cuestomize:latest
 includes:
 # all deployments in the example-namespace namespace
 - group: apps
   version: v1
   kind: Deployment
   namespace: example-namespace
+remoteModule:
+  registry: ghcr.io
+  repo: workday/cuestomize/examples/validation
+  tag: latest
+  auth:
+    kind: Secret
+    name: regcred

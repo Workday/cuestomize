@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"fmt"
 	"log"
 	"os"
@@ -15,12 +16,14 @@ import (
 )
 
 const (
-	// Version is the version of the Cuestomize tool.
-	Version = "0.1.0"
-
 	// LogLevelEnvVar is the name of the environment variable that can be used to set the log level.
 	LogLevelEnvVar = "LOG_LEVEL"
 )
+
+// Version is the version of Cuestomize.
+//
+//go:embed semver
+var Version string
 
 func main() {
 	if err := setupLogging(); err != nil {
@@ -35,6 +38,9 @@ func main() {
 
 	p := processor.NewSimpleProcessor(config, kio.FilterFunc(fn), true)
 	cmd := command.Build(p, command.StandaloneDisabled, false)
+	cmd.Version = Version
+	cmd.SetVersionTemplate("v{{.Version}}")
+
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
 	}
