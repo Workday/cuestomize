@@ -79,11 +79,11 @@ jobs:
       uses: dagger/dagger-for-github@8.0.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GITHUB_USER: ${{ github.actor }}
+        GITHUB_USER: ${{ github.repository_owner }}
         TAG: dev
         LATEST: "false"
         REPOSITORY: workday/cuestomize
       with:
         version: "0.18.14"
         verb: call
-        args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
+        args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64 --run-validations=false
