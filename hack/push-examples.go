@@ -68,7 +68,7 @@ func main() {
 		}
 		log.Trace().Str("entry", entry.Name()).Msg("Found example in directory")
 		repoName := registry + "/" + repositoryPrefix + "-" + entry.Name()
-		repositoryDirMap[repoName] = path.Join(examplesDir, entry.Name())
+		repositoryDirMap[repoName] = path.Join(examplesDir, entry.Name(), "cue")
 	}
 
 	tags := []string{tag}

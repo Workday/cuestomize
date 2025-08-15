@@ -5,13 +5,7 @@ resources:
 - deployment.yaml
 - service.yaml
 
-
 namespace: example-namespace
-
-secretGenerator:
-- name: regcred
-  envs:
-  - .env.secret
 
 transformers:
 - krm-func.yaml

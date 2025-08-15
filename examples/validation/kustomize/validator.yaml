@@ -18,6 +18,3 @@ remoteModule:
   registry: ghcr.io
   repo: workday/cuestomize/cuemodules/cuestomize-examples-validation
   tag: latest
-  auth:
-    kind: Secret
-    name: regcred

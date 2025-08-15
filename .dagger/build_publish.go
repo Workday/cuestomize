@@ -54,7 +54,7 @@ func (m *Cuestomize) BuildAndPublish(
 		}
 
 		// tests
-		if err := m.RunTests(ctx, buildContext); err != nil {
+		if _, err := m.TestWithCoverage(ctx, buildContext); err != nil {
 			return err
 		}
 	}
