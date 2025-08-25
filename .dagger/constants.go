@@ -9,7 +9,7 @@ const (
 	KustomizeImage        = "registry.k8s.io/kustomize/kustomize:v5.7.1"
 	CuelangImage          = "cuelang/cue:0.13.2"
 
-	GolangciLintDefaultVersion = "v2.1.6"
+	GolangciLintDefaultVersion = "v2.4.0"
 	GolangciLingImageFmt       = "golangci/golangci-lint:%s-alpine"
 )
 
