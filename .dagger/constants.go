@@ -7,7 +7,7 @@ const (
 	RegistryImage         = "registry:2"
 	DistrolessStaticImage = "gcr.io/distroless/static:latest"
 	KustomizeImage        = "registry.k8s.io/kustomize/kustomize:v5.7.1"
-	CuelangImage          = "cuelang/cue:0.13.2"
+	CuelangImage          = "cuelang/cue:v0.14.1"
 
 	GolangciLintDefaultVersion = "v2.4.0"
 	GolangciLingImageFmt       = "golangci/golangci-lint:%s-alpine"
