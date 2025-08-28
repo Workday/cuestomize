@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"dagger/cuestomize/internal/dagger"
+
+	"dagger.io/dagger/dag"
 )
 
 func (m *Cuestomize) Build(
@@ -49,7 +51,7 @@ func (m *Cuestomize) BuildAndPublish(
 ) error {
 	if runValidations {
 		// lint
-		if _, err := m.GolangciLintRun(ctx, buildContext, GolangciLintDefaultVersion, "5m"); err != nil {
+		if _, err := m.GolangciLintRun(ctx, buildContext, "", "5m"); err != nil {
 			return err
 		}
 
