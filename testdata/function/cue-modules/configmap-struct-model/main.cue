@@ -22,4 +22,6 @@ outConfigMap: {
 	}
 }
 
-outputs: cm: outConfigMap
+outputs: [
+	outConfigMap,
+]

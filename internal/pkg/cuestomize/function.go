@@ -8,7 +8,6 @@ import (
 	"cuelang.org/go/cue/build"
 	"cuelang.org/go/cue/cuecontext"
 	"cuelang.org/go/cue/load"
-	"cuelang.org/go/encoding/yaml"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
 	"github.com/Workday/cuestomize/internal/pkg/cuestomize/oci"
@@ -167,48 +166,6 @@ func fillMetadata(schema cue.Value, config *api.KRMInput) (cue.Value, error) {
 
 	filledSchema = filledSchema.FillPath(cue.ParsePath(MetadataFillPath), meta)
 	return filledSchema, nil
-}
-
-// processOutputs processes the outputs from the CUE model and appends them to the output slice.
-func processOutputs(unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
-	outputsValue := unified.LookupPath(cue.ParsePath(OutputsPath))
-	if !outputsValue.Exists() {
-		return nil, fmt.Errorf("'%s' not found in unified CUE instance", OutputsPath)
-	} else if outputsValue.Err() != nil {
-		return nil, cuerrors.ErrorWithDetails(outputsValue.Err(), "failed to lookup '%s' in unified CUE instance", OutputsPath)
-	}
-	outputsIter, err := outputsValue.List()
-	if err != nil {
-		return nil, fmt.Errorf("failed to get iterator over '%s' in unified CUE instance: %v", OutputsPath, err)
-	}
-	for outputsIter.Next() {
-		item := outputsIter.Value()
-
-		rNode, err := cueValueToRNode(&item)
-		if err != nil {
-			return nil, fmt.Errorf("failed to convert CUE value to kyaml.RNode: %w", err)
-		}
-
-		log.Debug().Str("apiVersion", rNode.GetApiVersion()).Str("kind", rNode.GetKind()).
-			Str("namespace", rNode.GetNamespace()).Str("name", rNode.GetName()).Msg("adding item to output resources")
-		items = append(items, rNode)
-	}
-	return items, nil
-}
-
-// cueValueToRNode converts a CUE value to a kyaml.RNode.
-func cueValueToRNode(value *cue.Value) (*kyaml.RNode, error) {
-	asBytes, err := yaml.Encode(*value)
-	if err != nil {
-		return nil, fmt.Errorf("failed to marshal CUE value as YAML: %w", err)
-	}
-
-	rNode, err := kyaml.Parse(string(asBytes))
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse item as kyaml.RNode: %w", err)
-	}
-
-	return rNode, nil
 }
 
 // shouldActAsValidator checks if the KRMInput configuration has the validator annotation set.

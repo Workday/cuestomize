@@ -38,6 +38,19 @@ func TestKRMFunction(t *testing.T) {
 				resid.NewResIdWithNamespace(resid.Gvk{Group: "", Version: "v1", Kind: "ConfigMap"}, "example-configmap", "default"),
 			},
 		},
+		// configmap-struct-model tests
+		{
+			Name:                  "configmap-struct-model with configmap-ok should succeed",
+			TestdataCUEModelPath:  "../../../testdata/function/cue-modules/configmap-struct-model",
+			TestdataKustomizePath: "../../../testdata/function/kustomize-inputs/configmap-ok",
+			ShouldFail:            false,
+			Expected: []resid.ResId{
+				resid.NewResIdWithNamespace(resid.Gvk{Group: "cuestomize.dev", Version: "v1alpha1", Kind: "Cuestomization"}, "example-cuestomization", ""),
+				resid.NewResIdWithNamespace(resid.Gvk{Group: "apps", Version: "v1", Kind: "Deployment"}, "example-deployment", "example-namespace"),
+				resid.NewResIdWithNamespace(resid.Gvk{Group: "", Version: "v1", Kind: "Service"}, "example-service", "example-namespace"),
+				resid.NewResIdWithNamespace(resid.Gvk{Group: "", Version: "v1", Kind: "ConfigMap"}, "example-configmap", "default"),
+			},
+		},
 		{
 			Name:                  "configmap-model with configmap-missing-includes should fail",
 			TestdataCUEModelPath:  "../../../testdata/function/cue-modules/configmap-model",
