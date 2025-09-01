@@ -12,11 +12,9 @@ jobs:
 
     - name: Renovate
       uses: dagger/dagger-for-github@8.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         version: "0.18.14"
         verb: call
-        args: renovate
-
-    
-      
-    
+        args: renovate --github-token=env://GITHUB_TOKEN
