@@ -14,11 +14,7 @@ func (m *Cuestomize) Renovate(
 ) *dagger.Container {
 	cacheHack := time.Now() // avoid dagger to cache the container
 	return dag.Container().From("renovate/renovate:latest").
-		// WithSecretVariable("RENOVATE_GITHUB_COM_TOKEN", githubToken).
-		// WithSecretVariable("GITHUB_COM_TOKEN", githubToken).
-		// WithSecretVariable("RENOVATE_GITHUB_TOKEN", githubToken).
-		WithSecretVariable("RENOVATE_TOKEN", githubToken). // required
-		WithSecretVariable("GITHUB_TOKEN", githubToken).
+		WithSecretVariable("RENOVATE_TOKEN", githubToken).
 		WithEnvVariable("RENOVATE_PLATFORM", "github").
 		WithEnvVariable("RENOVATE_REQUIRE_CONFIG", "required").
 		WithEnvVariable("RENOVATE_DEPENDENCY_DASHBOARD", "false").
