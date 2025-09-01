@@ -3,6 +3,7 @@ package oci
 import (
 	"context"
 	"fmt"
+	"path/filepath"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/fetcher"
 	"github.com/rs/zerolog/log"
@@ -34,13 +35,10 @@ func FetchFromRegistry(ctx context.Context, config *api.KRMInput, items []*kyaml
 	); err != nil {
 		return fmt.Errorf("failed to fetch from OCI registry: %w", err)
 	}
-	entries, err := os.ReadDir("./")
+	_, err = os.Stat(filepath.Join(workingDir, "cue.mod"))
 	if err != nil {
-		os.Stderr.WriteString(err.Error())
+		log.Warn().Err(err).Msg("cue.mod directory not found. Please ensure cue.mod exists in artifact")
 	}
 
-	for _, e := range entries {
-		os.Stderr.WriteString(e.Name())
-	}
 	return nil
 }
