@@ -3,10 +3,10 @@ package oci
 import (
 	"context"
 	"fmt"
-
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/fetcher"
 	"github.com/rs/zerolog/log"
+	"os"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
@@ -33,6 +33,14 @@ func FetchFromRegistry(ctx context.Context, config *api.KRMInput, items []*kyaml
 		config.RemoteModule.PlainHTTP,
 	); err != nil {
 		return fmt.Errorf("failed to fetch from OCI registry: %w", err)
+	}
+	entries, err := os.ReadDir("./")
+	if err != nil {
+		os.Stderr.WriteString(err)
+	}
+
+	for _, e := range entries {
+		os.Stderr.WriteString(e.Name())
 	}
 	return nil
 }
