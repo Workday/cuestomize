@@ -6,7 +6,7 @@ metadata:
     config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
-        image: cuestomize:latest
+        image: ghcr.io/workday/cuestomize:latest
         network: true
 input:
   configMapName: example-configmap
