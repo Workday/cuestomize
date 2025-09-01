@@ -36,7 +36,7 @@ func FetchFromRegistry(ctx context.Context, config *api.KRMInput, items []*kyaml
 	}
 	entries, err := os.ReadDir("./")
 	if err != nil {
-		os.Stderr.WriteString(err)
+		os.Stderr.WriteString(err.Error())
 	}
 
 	for _, e := range entries {
