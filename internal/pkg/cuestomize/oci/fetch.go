@@ -3,11 +3,11 @@ package oci
 import (
 	"context"
 	"fmt"
-	"path/filepath"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/fetcher"
 	"github.com/rs/zerolog/log"
 	"os"
+	"path/filepath"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
