@@ -4,7 +4,7 @@ go 1.25.0
 
 require (
 	cuelang.org/go v0.14.1
-//	dagger/cuestomize v0.0.0
+	dagger/cuestomize v0.0.0
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.0
 	k8s.io/apimachinery v0.33.4
