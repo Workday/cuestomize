@@ -1,0 +1,5 @@
+[book]
+authors = ["The Cuestomize Maintainers"]
+language = "en"
+src = "src"
+title = "The Cuestomize Book"
