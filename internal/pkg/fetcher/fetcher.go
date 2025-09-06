@@ -14,13 +14,11 @@ import (
 func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir, reg, repo, tag string, plainHTTP bool) error {
 	fs, err := file.New(workingDir)
 	if err != nil {
-		log.Error().Err(err).Str("workingDir", workingDir).Msg("failed to create file store")
 		return fmt.Errorf("failed to create file store: %w", err)
 	}
 
 	repository, err := remote.NewRepository(reg + "/" + repo)
 	if err != nil {
-		log.Error().Err(err).Str("reg", reg).Str("repo", repo).Msg("failed to create remote repository")
 		return err
 	}
 	if client != nil {

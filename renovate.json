@@ -1,0 +1,23 @@
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "customManagers": [
+        {
+            "customType": "regex",
+            "fileMatch": [
+                ".dagger/constants.go"
+            ],
+            "matchStrings": [
+                "GolangImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
+                "RegistryImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
+                "DistrolessStaticImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
+                "KustomizeImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
+                "GolangciLingImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\""
+            ],
+            "datasourceTemplate": "docker",
+            "versioningTemplate": "docker"
+        }
+    ],
+    "extends": [
+        ":semanticCommits"
+    ]
+}

@@ -15,10 +15,10 @@ func (m *Cuestomize) GolangciLintRun(
 	// +default="5m"
 	timeout string,
 ) (*dagger.Container, error) {
-	if version == "" {
-		version = GolangciLintDefaultVersion
+	image := GolangciLintImage
+	if version != "" {
+		image = fmt.Sprintf(GolangciLintImageFmt, version)
 	}
-	image := fmt.Sprintf(GolangciLingImageFmt, version)
 	linter := dag.Container().From(image).
 		WithMountedDirectory("/src", src).
 		WithWorkdir("/src")
