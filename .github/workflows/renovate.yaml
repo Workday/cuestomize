@@ -1,9 +1,15 @@
+name: Renovate
+
 on:
+  workflow_dispatch:
   schedule:
   - cron: "0 8 * * 1"
 
 jobs:
   renovate:
+    permissions:
+      pull-requests: write
+
     name: Renovate dependencies
     runs-on: ubuntu-latest
 

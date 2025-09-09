@@ -11,7 +11,14 @@ func (m *Cuestomize) Renovate(
 	githubToken *dagger.Secret,
 	// +default="Workday/cuestomize"
 	repo string,
+	// +default=false
+	dryRun bool,
 ) *dagger.Container {
+	args := []string{}
+	if dryRun {
+		args = append(args, "--dry-run")
+	}
+
 	cacheHack := time.Now() // avoid dagger to cache the container
 	return dag.Container().From("renovate/renovate:latest").
 		WithSecretVariable("RENOVATE_TOKEN", githubToken).
@@ -21,5 +28,5 @@ func (m *Cuestomize) Renovate(
 		WithEnvVariable("RENOVATE_GIT_AUTHOR", "Renovate Bot <bot@renovateapp.com>").
 		WithEnvVariable("RENOVATE_REPOSITORIES", repo).
 		WithEnvVariable("CACHE_HACK", cacheHack.String()).
-		WithExec([]string{"--dry-run"}, dagger.ContainerWithExecOpts{UseEntrypoint: true})
+		WithExec(args, dagger.ContainerWithExecOpts{UseEntrypoint: true})
 }
