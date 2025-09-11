@@ -1,6 +1,10 @@
 name: Publish GH Pages
 
 on:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - 'docs/**'
   push:
     branches: [ main ]
     paths:
@@ -10,6 +14,9 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     permissions: write-all
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
     - uses: actions/checkout@v4
       with:
