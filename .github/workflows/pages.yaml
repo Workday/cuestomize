@@ -3,14 +3,16 @@ name: Publish GH Pages
 on:
   pull_request:
     branches: [ main ]
+    paths:
+    - 'docs/**'
+  push:
+    branches: [ main ]
 
 jobs:
   build:
-    name: Build, Test and Deploy
+    name: Deploy GH Pages
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: write
+    permissions: write-all
     steps:
     - uses: actions/checkout@v4
     - uses: actions-rs/toolchain@v1
