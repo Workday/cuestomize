@@ -11,10 +11,7 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-      id-token: write
+    permissions: write-all
     steps:
     - uses: actions/checkout@v4
       with:
