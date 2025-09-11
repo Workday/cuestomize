@@ -19,5 +19,13 @@
     ],
     "extends": [
         ":semanticCommits"
-    ]
+    ],
+    "gomod": {
+        "ignorePaths": [
+            ".dagger/**"
+        ],
+        "postUpdateOptions": [
+            "gomodTidy"
+        ]
+    }
 }

@@ -19,7 +19,7 @@ func (m *Cuestomize) Renovate(
 		args = append(args, "--dry-run")
 	}
 
-	cacheHack := time.Now() // avoid dagger to cache the container
+	cacheHack := time.Now() // prevent dagger from caching the renovate container
 	return dag.Container().From("renovate/renovate:latest").
 		WithSecretVariable("RENOVATE_TOKEN", githubToken).
 		WithEnvVariable("RENOVATE_PLATFORM", "github").
