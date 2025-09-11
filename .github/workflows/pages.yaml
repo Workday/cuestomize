@@ -1,12 +1,10 @@
 name: Publish GH Pages
 
 on:
-  pull_request:
+  push:
     branches: [ main ]
     paths:
     - 'docs/**'
-  push:
-    branches: [ main ]
 
 jobs:
   deploy:
