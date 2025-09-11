@@ -2,6 +2,8 @@ name: CI (Dagger)
 
 on:
   pull_request:
+    paths-ignore:
+    - 'docs/**'
     branches:
     - main
     types:

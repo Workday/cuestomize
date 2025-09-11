@@ -3,9 +3,11 @@ name: CI (Merge)
 on:
   push:
     branches: [ main ]
+    paths-ignore:
+    - 'docs/**'
 jobs:
   build:
-    name: Build and Test
+    name: Build
     runs-on: ubuntu-latest
 
     steps:
