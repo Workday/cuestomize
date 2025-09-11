@@ -91,7 +91,7 @@ Since Cuestomize is a KRM function, you'll need a few extra flags in order for `
 - `--network` if your CUE model is pulled from a registry (can be omitted if the model is local to the function's image).
 
 ### Build the Manifests
-```bash
+```shell
 kustomize build . --enable-alpha-plugins --network
 ```
 
