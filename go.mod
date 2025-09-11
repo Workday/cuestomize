@@ -8,7 +8,7 @@ require (
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.0
 	k8s.io/apimachinery v0.33.4
-	k8s.io/kube-openapi v0.0.0-20250701173324-9bd5c66d9911
+	k8s.io/kube-openapi v0.0.0-20250909170358-d67c058d9372
 	oras.land/oras-go/v2 v2.6.0
 	sigs.k8s.io/kustomize/api v0.20.1
 	sigs.k8s.io/kustomize/kyaml v0.20.1
