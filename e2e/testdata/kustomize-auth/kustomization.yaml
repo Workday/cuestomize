@@ -12,6 +12,10 @@ secretGenerator:
 - name: regcred
   envs:
   - .env.secret
+  options:
+    disableNameSuffixHash: true
+    annotations:
+      config.kubernetes.io/local-config: "true"
 
 transformers:
 - krm-func.yaml
