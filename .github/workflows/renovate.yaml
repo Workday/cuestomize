@@ -1,0 +1,25 @@
+name: Renovate
+
+on:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 8 * * 1"
+
+jobs:
+  renovate:
+    permissions: write-all
+
+    name: Renovate dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Renovate
+      uses: dagger/dagger-for-github@8.0.0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        version: "0.18.14"
+        verb: call
+        args: renovate --github-token=env://GITHUB_TOKEN

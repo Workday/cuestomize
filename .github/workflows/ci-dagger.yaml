@@ -2,13 +2,21 @@ name: CI (Dagger)
 
 on:
   pull_request:
+    paths-ignore:
+    - 'docs/**'
     branches:
     - main
+    types:
+    - opened
+    - reopened
+    - synchronize
+    - ready_for_review
 
 jobs:
   lint:
     name: Golangci-lint
     runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
 
     steps:
     - name: Checkout repository
@@ -24,6 +32,7 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
 
     steps:
     - name: Checkout repository
@@ -39,6 +48,7 @@ jobs:
   e2e-test:
     name: E2E Test
     runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
 
     steps:
     - name: Checkout repository
@@ -54,6 +64,7 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    if: '! github.event.pull_request.draft'
 
     steps:
     - name: Checkout repository

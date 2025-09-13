@@ -46,4 +46,4 @@ Make sure to pass `kustomize build` the following flags:
 Cuestomize is able to integrate with any CUE model respecting the following constraints:
 - The model accepts a `input` section (you are free to decide the structure of this section to match the expected KRM input structure)
 - The model has an `outputs` section which is a slice of KRM resources. This field will hold the generated resources
-- The model (optionally) accepts an `includes` section which is a map `<group>:<version>:<kind>:<namespace>:<name>:{resource}` of resources that are forwarded from the kustomize input stream to the CUE model.
+- The model (optionally) accepts an `includes` section which is a map `<apiVersion>:<kind>:<namespace>:<name>:{resource}` of resources that are forwarded from the kustomize input stream to the CUE model.
