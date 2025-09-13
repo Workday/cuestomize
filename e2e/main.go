@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"dagger/cuestomize/shared"
-	"dagger/cuestomize/shared/oci"
 
+	"github.com/Workday/cuestomize/pkg/oci"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
 
