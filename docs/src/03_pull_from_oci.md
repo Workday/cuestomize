@@ -76,20 +76,3 @@ The secret must be in the kustomize input stream to the function in order for it
 > ```
 > 
 > This will generate a Secret named `oci-auth` with your credentials.
-
-
-#### (Discouraged) Passing Credentials via Environment Variables
-
-You can also pass credentials directly as environment variables to the function container, but this is not recommended:
-
-```yaml
-metadata:
-  annotations:
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
-        envs:
-        - REGISTRY_USERNAME
-        - REGISTRY_PASSWORD
-```

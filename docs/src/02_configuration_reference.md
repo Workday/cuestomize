@@ -22,11 +22,12 @@ All these options are documented below.
 
 `.metadata.annotations`
 
-| Annotation                      | Description                              |
-| ------------------------------- | ---------------------------------------- |
-| `config.kubernetes.io/function` | Contains the KRM function configuration. |
+| Annotation                       | Description                                                                        |
+| -------------------------------- | ---------------------------------------------------------------------------------- |
+| `config.kubernetes.io/function`  | Contains the KRM function configuration.                                           |
+| `config.cuestomize.io/validator` | If set to `"true"`, tells the function to use the CUE module for *validation* only |
 
-
+##### Annotation – `config.kubernetes.io/function`
 The annotation `config.kubernetes.io/function` is the one used by kustomize to configure a KRM function ([kustomize docs](https://kubectl.docs.kubernetes.io/guides/extending_kustomize/containerized_krm_functions/#configuration)).
 
 Its value must contains the configuration for the container that runs the KRM function.
@@ -56,7 +57,12 @@ Cuestomize allows you to configure the logging level and pass the credentials fo
 | `REGISTRY_USERNAME` | The registry to pull the CUE module from username |
 | `REGISTRY_PASSWORD` | The registry to pull the CUE module from password |
 
+##### Annotation – `config.cuestomize.io/validator`
+Setting `config.cuestomize.io/validator: "true"` in the configuration annotations tells Cuestomize to use the CUE module as a validator only: it will unify the inputs and includes with the module, but it won't collect the outputs.
 
+This is useful if you want to validate a set of manifests with some CUE constraints, e.g. ensuring that all Deployments use a particular `securityContext`, or that resources in certain namespaces has a particular label, etc.
+
+When used in validator mode, CUE will be used to validate, instead of to generate, and the behaviour you can expect is the same as running [`cue eval` command](https://cuelang.org/docs/reference/command/cue-help-eval/).
 
 
 ### Example
@@ -74,4 +80,8 @@ metadata:
 remoteModule:
   oci: docker.io/wackoninja/cuemodules:latest
 includes:
-  - path: ./base
+- version: "v1"
+  kind: ConfigMap
+  name: "test-configmap"
+  namespace: "test-namespace"
+```
