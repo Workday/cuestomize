@@ -3,10 +3,9 @@ package testhelpers
 import (
 	"testing"
 
+	"github.com/Workday/cuestomize/pkg/oci"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"oras.land/oras-go/v2/registry/remote"
-
-	"dagger/cuestomize/shared/oci"
 )
 
 func PushDirectoryToOCIRegistry_T(t *testing.T, reference, rootDirectory, artifactType, tag string, client remote.Client, plainHTTP bool) ocispec.Descriptor {

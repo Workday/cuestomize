@@ -5,6 +5,3 @@ cover.out
 
 **/cue.mod/gen/*
 !**/cue.mod/module.cue
-
-go.work
-go.work.sum
