@@ -4,10 +4,10 @@ metadata:
   name: example
   annotations:
     config.cuestomize.io/validator: "true" # tells the function to run as a validator
-    config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
         image: ghcr.io/workday/cuestomize:latest
+        network: true
 includes:
 # all deployments in the example-namespace namespace
 - group: apps
