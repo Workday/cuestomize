@@ -6,7 +6,7 @@ require (
 	cuelang.org/go v0.14.1
 	dagger/cuestomize v0.0.0
 	github.com/rs/zerolog v1.34.0
-	github.com/stretchr/testify v1.11.0
+	github.com/stretchr/testify v1.11.1
 	k8s.io/apimachinery v0.33.4
 	k8s.io/kube-openapi v0.0.0-20250910181357-589584f1c912
 	oras.land/oras-go/v2 v2.6.0
