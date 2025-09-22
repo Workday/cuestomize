@@ -6,7 +6,7 @@ const (
 	// GolangImage is the Golang base image
 	GolangImage = "golang:1.25"
 	// RegistryImage is image for local container registry
-	RegistryImage = "registry:2"
+	RegistryImage = "registry:3"
 	// DistrolessStaticImage is the distroless static image
 	DistrolessStaticImage = "gcr.io/distroless/static:latest"
 	// KustomizeImage is the Kustomize image
