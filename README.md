@@ -40,7 +40,7 @@ Make sure to pass `kustomize build` the following flags:
 - `--enable-alpha-plugins` to enable the KRM function
 - `--network` if your CUE model is pulled from a registry.
 
-> **Example:** `kustomize build . --enable-alpha-plugins --network .`.
+> **Example:** `kustomize build . --enable-alpha-plugins --network`.
 
 ## CUE Model Integration
 Cuestomize is able to integrate with any CUE model respecting the following constraints:
