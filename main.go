@@ -6,6 +6,8 @@ import (
 	"log"
 	"os"
 
+	"golang.org/x/term"
+
 	"github.com/Workday/cuestomize/api"
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
@@ -40,6 +42,11 @@ func main() {
 	cmd := command.Build(p, command.StandaloneDisabled, false)
 	cmd.Version = Version
 	cmd.SetVersionTemplate("v{{.Version}}")
+
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		cmd.Help()
+		os.Exit(0)
+	}
 
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
