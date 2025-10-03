@@ -7,10 +7,10 @@ import (
 	"os"
 
 	"github.com/Workday/cuestomize/api"
+	"github.com/Workday/cuestomize/cmd"
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
 	"github.com/rs/zerolog"
-
 	"sigs.k8s.io/kustomize/kyaml/fn/framework/command"
 	"sigs.k8s.io/kustomize/kyaml/kio"
 )
@@ -30,18 +30,24 @@ func main() {
 		os.Exit(1)
 	}
 
+	// This is the KRM function processor for the root command.
 	config := new(api.KRMInput)
 	fn, err := krm.NewBuilder().SetConfig(config).Build()
 	if err != nil {
 		log.Fatalf("failed to build KRM function: %v", err)
 	}
-
 	p := processor.NewSimpleProcessor(config, kio.FilterFunc(fn), true)
-	cmd := command.Build(p, command.StandaloneDisabled, false)
-	cmd.Version = Version
-	cmd.SetVersionTemplate("v{{.Version}}")
 
-	if err := cmd.Execute(); err != nil {
+	// rootCmd is the command that runs as a KRM function.
+	rootCmd := command.Build(p, command.StandaloneDisabled, false)
+	rootCmd.Version = Version
+	rootCmd.SetVersionTemplate("v{{.Version}}")
+
+	// cliCmd is the command that runs as a standalone CLI.
+	cliCmd := cmd.NewCLICommand()
+	rootCmd.AddCommand(cliCmd)
+
+	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }

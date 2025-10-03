@@ -9,7 +9,10 @@ _deployment: {
 	}
 	spec!: {
 		selector!: matchLabels!: #Labels
-		template!: metadata!: labels!: #Labels
+		template!: {
+			metadata!: labels!: #Labels
+			spec: _
+		}
 		...
 	}
 	...
