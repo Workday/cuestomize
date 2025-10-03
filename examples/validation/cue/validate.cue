@@ -27,8 +27,10 @@ deployments: includes["apps/v1"]["Deployment"]["example-namespace"]
 		replicas!: int & >0 & <5
 
 		selector!: matchLabels!: #Labels
-		template!: metadata!: labels!: #Labels
-
+		template!: {
+			metadata!: labels!: #Labels
+			spec: _
+		}
 		...
 	}
 }
@@ -38,18 +40,3 @@ deployments: {
 }
 
 validated: deployment.#ValidateSelectorsOverMap & {map: deployments}
-
-// selectorEqualLabels: close({
-// 	for i, d in deployments {
-// 		"deployment<\(d.metadata.name)>": close({
-// 			for k, v in d.metadata.labels {"\(k)": v}
-// 		})
-// 	}
-// })
-// selectorEqualLabels: close({
-// 	for i, d in deployments {
-// 		"deployment<\(d.metadata.name)>": close({
-// 			for k, v in d.spec.selector.matchLabels {"\(k)": v}
-// 		})
-// 	}
-// })
