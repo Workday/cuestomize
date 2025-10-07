@@ -12,6 +12,7 @@ import (
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
 	"github.com/rs/zerolog"
+	"github.com/spf13/cobra"
 
 	"sigs.k8s.io/kustomize/kyaml/fn/framework/command"
 	"sigs.k8s.io/kustomize/kyaml/kio"
@@ -39,14 +40,14 @@ func main() {
 	}
 
 	p := processor.NewSimpleProcessor(config, kio.FilterFunc(fn), true)
-	cmd := command.Build(p, command.StandaloneDisabled, false)
+	cmd := &cobra.Command{}
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		cmd = command.Build(p, command.StandaloneEnabled, false)
+	} else {
+		cmd = command.Build(p, command.StandaloneDisabled, false)
+	}
 	cmd.Version = Version
 	cmd.SetVersionTemplate("v{{.Version}}")
-
-	if term.IsTerminal(int(os.Stdout.Fd())) {
-		cmd.Help()
-		os.Exit(0)
-	}
 
 	if err := cmd.Execute(); err != nil {
 		os.Exit(1)
