@@ -50,7 +50,7 @@ func ExtractIncludes(krm *KRMInput, items []*kyaml.RNode, ctx context.Context) (
 			}
 		}
 		if includesCount == 0 {
-			log.V(0).Info("no items matched for include selector", "selector", sel.String())
+			log.V(-1).Info("no items matched for include selector", "selector", sel.String())
 		}
 	}
 

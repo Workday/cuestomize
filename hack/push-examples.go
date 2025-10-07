@@ -3,14 +3,14 @@ package main
 import (
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 	"path"
 	"strings"
 
 	"dagger/cuestomize/shared/oci"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
+	"github.com/go-logr/logr"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
 
@@ -22,11 +22,12 @@ const (
 )
 
 func main() {
-	ctx := context.Background()
-	if err := setupLogging(); err != nil {
+	ctx, err := setupLogging(context.Background())
+	if err != nil {
 		panic(fmt.Errorf("failed to setup logging: %w", err))
 	}
-	log.Debug().Msg("Starting to push examples to OCI registry")
+	log := logr.FromContextOrDiscard(ctx)
+	log.V(2).Info("starting to push examples to OCI registry")
 	username := os.Getenv("OCI_USERNAME")
 	if username == "" {
 		panic("OCI_USERNAME environment variable is not set")
@@ -56,7 +57,8 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to read examples directory: %w", err))
 	}
-	log.Trace().Int("entries", len(entries)).Msg("Found entries in examples directory")
+
+	log.V(2).Info("found entries in examples directory", "entries", len(entries))
 
 	repositoryDirMap := make(map[string]string)
 
@@ -65,10 +67,10 @@ func main() {
 			continue
 		}
 		if _, err := os.Stat(path.Join(examplesDir, entry.Name(), "cue", "cue.mod")); err != nil {
-			log.Warn().Err(err).Str("entry", entry.Name()).Msg("Skipping example without cue/cue.mod file")
+			log.Info("skipping example without cue/cue.mod file", "entry", entry.Name(), "error", err)
 			continue
 		}
-		log.Trace().Str("entry", entry.Name()).Msg("Found example in directory")
+		log.V(2).Info("found example in directory", "entry", entry.Name())
 		repoName := registry + "/" + repositoryPrefix + "-" + entry.Name()
 		repositoryDirMap[repoName] = path.Join(examplesDir, entry.Name(), "cue")
 	}
@@ -77,7 +79,7 @@ func main() {
 	if latest {
 		tags = append(tags, "latest")
 	}
-	log.Trace().Strs("tags", tags).Msg("Tags to push")
+	log.V(2).Info("tags to push", "tags", tags)
 
 	client := auth.DefaultClient
 
@@ -90,28 +92,31 @@ func main() {
 	for repoName, dir := range repositoryDirMap {
 		for _, t := range tags {
 			repoWithTag := repoName + ":" + t
-			log.Debug().Str("repoWithTag", repoWithTag).Msg("Pushing to OCI registry")
+			log.V(2).Info("pushing to OCI registry", "repoWithTag", repoWithTag, "dir", dir)
 			_, err := oci.PushDirectoryToOCIRegistry(ctx, repoWithTag, dir, CueModuleArtifactType, t, client, false)
 			if err != nil {
 				panic(fmt.Errorf("failed to push %s to OCI registry: %w", repoWithTag, err))
 			}
-			log.Info().Str("repoWithTag", repoWithTag).Msg("Pushed to OCI registry")
+			log.Info("pushed to OCI registry", "repoWithTag", repoWithTag)
 			pushedRefs = append(pushedRefs, repoWithTag)
 		}
 	}
-	log.Info().Strs("pushedRefs", pushedRefs).Msg("Pushed references to OCI registry")
+	log.Info("pushed references to OCI registry", "pushedRefs", pushedRefs)
 }
 
 // setupLogging configures the global logging level based on the log level environment variable.
-func setupLogging() error {
+func setupLogging(ctx context.Context) (context.Context, error) {
 	logLevel := os.Getenv(LogLevelEnvVar)
-	if logLevel == "" {
-		zerolog.SetGlobalLevel(zerolog.WarnLevel)
+
+	lvl := slog.LevelInfo
+	if logLevel != "" {
+		err := lvl.UnmarshalText([]byte(logLevel))
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal log level from environment variable %s: %w", LogLevelEnvVar, err)
+		}
 	}
-	level, err := zerolog.ParseLevel(logLevel)
-	if err != nil {
-		return fmt.Errorf("failed to parse log level from environment variable %s: %w", LogLevelEnvVar, err)
-	}
-	zerolog.SetGlobalLevel(level)
-	return nil
+
+	log := logr.FromSlogHandler(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: lvl}))
+
+	return logr.NewContext(ctx, log), nil
 }

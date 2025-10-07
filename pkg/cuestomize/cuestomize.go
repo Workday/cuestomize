@@ -70,5 +70,5 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 		log.V(1).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
-	return ProcessOutputs(unified, items)
+	return ProcessOutputs(unified, items, ctx)
 }

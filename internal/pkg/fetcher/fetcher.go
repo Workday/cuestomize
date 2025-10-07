@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/rs/zerolog/log"
+	"github.com/go-logr/logr"
 	"oras.land/oras-go/v2"
 	"oras.land/oras-go/v2/content/file"
 	"oras.land/oras-go/v2/registry/remote"
@@ -12,6 +12,8 @@ import (
 
 // FetchFromOCIRegistry fetches an artifact from an OCI registry and stores it in the specified working directory.
 func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir, reg, repo, tag string, plainHTTP bool) error {
+	log := logr.FromContextOrDiscard(ctx)
+
 	fs, err := file.New(workingDir)
 	if err != nil {
 		return fmt.Errorf("failed to create file store: %w", err)
@@ -31,11 +33,13 @@ func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir,
 		return err
 	}
 
-	log.Debug().Str("reg", reg).
-		Str("repo", repo).
-		Str("workingDir", workingDir).
-		Str("digest", desc.Digest.String()).
-		Str("mediaType", desc.MediaType).
-		Msg("fetched artifact from OCI registry")
+	log.V(2).Info("fetched artifact from OCI registry",
+		"reg", reg,
+		"repo", repo,
+		"workingDir", workingDir,
+		"digest", desc.Digest.String(),
+		"mediaType", desc.MediaType,
+	)
+
 	return nil
 }
