@@ -1,14 +1,17 @@
 package main
 
 import (
+	"context"
 	_ "embed"
 	"fmt"
 	"log"
+	"log/slog"
 	"os"
 
 	"github.com/Workday/cuestomize/api"
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
+	"github.com/go-logr/logr"
 	"github.com/rs/zerolog"
 
 	"sigs.k8s.io/kustomize/kyaml/fn/framework/command"
@@ -26,7 +29,8 @@ const (
 var Version string
 
 func main() {
-	if err := setupLogging(); err != nil {
+	ctx := context.Background()
+	if err := setupLogging(ctx); err != nil {
 		os.Exit(1)
 	}
 
@@ -47,15 +51,26 @@ func main() {
 }
 
 // setupLogging configures the global logging level based on the log level environment variable.
-func setupLogging() error {
+func setupLogging(ctx context.Context) (context.Context, error) {
 	logLevel := os.Getenv(LogLevelEnvVar)
 	if logLevel == "" {
 		zerolog.SetGlobalLevel(zerolog.WarnLevel)
 	}
 	level, err := zerolog.ParseLevel(logLevel)
 	if err != nil {
-		return fmt.Errorf("failed to parse log level from environment variable %s: %w", LogLevelEnvVar, err)
+		return nil, fmt.Errorf("failed to parse log level from environment variable %s: %w", LogLevelEnvVar, err)
 	}
 	zerolog.SetGlobalLevel(level)
-	return nil
+
+	lvl := slog.LevelInfo
+	if logLevel != "" {
+		err := lvl.UnmarshalText([]byte(logLevel))
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal log level from environment variable %s: %w", LogLevelEnvVar, err)
+		}
+	}
+
+	log := logr.FromSlogHandler(slog.NewJSONHandler(os.Stderr, &slog.HandlerOptions{Level: lvl}))
+
+	return logr.NewContext(ctx, log), nil
 }
