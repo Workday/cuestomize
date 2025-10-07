@@ -54,7 +54,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Dagger Build And Publish
-      uses: dagger/dagger-for-github@8.2.0
+      uses: dagger/dagger-for-github@v8.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
@@ -78,7 +78,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run pipeline
-      uses: dagger/dagger-for-github@8.2.0
+      uses: dagger/dagger-for-github@v8.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
