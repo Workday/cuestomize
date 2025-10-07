@@ -9,31 +9,33 @@ import (
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
 	"github.com/Workday/cuestomize/internal/pkg/cuestomize/oci"
-	"github.com/rs/zerolog/log"
+	"github.com/go-logr/logr"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
 // Cuestomize generates (or validates) resources from the provided CUE configuration and input resources.
-func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string) ([]*kyaml.RNode, error) {
-	ctx := cuecontext.New()
+func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string, ctx context.Context) ([]*kyaml.RNode, error) {
+	log := logr.FromContextOrDiscard(ctx)
+
+	cueCtx := cuecontext.New()
 
 	if config.RemoteModule != nil {
-		log.Debug().Msg("fetching CUE model from OCI registry")
-		if err := oci.FetchFromRegistry(context.TODO(), config, items, resourcesPath); err != nil {
+		log.Info("fetching CUE model from OCI registry")
+		if err := oci.FetchFromRegistry(ctx, config, items, resourcesPath); err != nil {
 			return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
 		}
 	}
 
-	includes, err := api.ExtractIncludes(config, items)
+	includes, err := api.ExtractIncludes(config, items, ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to compute includes from KRM function inputs: %w", err)
 	}
-	includesValue, err := includes.IntoCueValue(ctx)
+	includesValue, err := includes.IntoCueValue(cueCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert includes into CUE value: %w", err)
 	}
 
-	configValue, err := config.IntoCueValue(ctx)
+	configValue, err := config.IntoCueValue(cueCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert config into CUE value: %w", err)
 	}
@@ -43,7 +45,7 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 		return nil, fmt.Errorf("failed to load CUE model from '%s': %w", resourcesPath, err)
 	}
 
-	schema, err := BuildCUEModelSchema(ctx, instances)
+	schema, err := BuildCUEModelSchema(cueCtx, instances)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CUE model schema: %w", err)
 	}
@@ -65,7 +67,7 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 	}
 
 	if ShouldActAsValidator(config) {
-		log.Debug().Msg("function is acting in validator mode.")
+		log.V(1).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
 	return ProcessOutputs(unified, items)

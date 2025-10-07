@@ -1,6 +1,7 @@
 package cuestomize
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/Workday/cuestomize/api"
@@ -42,9 +43,9 @@ func (b *CUEstomizeFuncBuilder) SetResourcesPath(resourcesPath string) *CUEstomi
 }
 
 // Build returns a function that can be used to generate resources from a CUE configuration and some input resources.
-func (b *CUEstomizeFuncBuilder) Build() (func([]*kyaml.RNode) ([]*kyaml.RNode, error), error) {
+func (b *CUEstomizeFuncBuilder) Build(ctx context.Context) (func([]*kyaml.RNode) ([]*kyaml.RNode, error), error) {
 	if b.config == nil {
 		return nil, fmt.Errorf("config must be set before building the KRM function")
 	}
-	return newCuestomizeFunctionWithPath(b.config, &b.resourcesPath), nil
+	return newCuestomizeFunctionWithPath(b.config, &b.resourcesPath, ctx), nil
 }

@@ -1,6 +1,8 @@
 package cuestomize
 
 import (
+	"context"
+
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/pkg/cuestomize"
 
@@ -18,8 +20,8 @@ type KRMFunction = func([]*kyaml.RNode) ([]*kyaml.RNode, error)
 // * config: pointer to the configuration object
 //
 // * resourcesPath: path to the directory containing the CUE resources (nil to use the default)
-func newCuestomizeFunctionWithPath(config *api.KRMInput, resourcesPath *string) KRMFunction {
+func newCuestomizeFunctionWithPath(config *api.KRMInput, resourcesPath *string, ctx context.Context) KRMFunction {
 	return func(items []*kyaml.RNode) ([]*kyaml.RNode, error) {
-		return cuestomize.Cuestomize(items, config, *resourcesPath)
+		return cuestomize.Cuestomize(items, config, *resourcesPath, ctx)
 	}
 }

@@ -12,7 +12,6 @@ import (
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
 	"github.com/go-logr/logr"
-	"github.com/rs/zerolog"
 
 	"sigs.k8s.io/kustomize/kyaml/fn/framework/command"
 	"sigs.k8s.io/kustomize/kyaml/kio"
@@ -29,13 +28,13 @@ const (
 var Version string
 
 func main() {
-	ctx := context.Background()
-	if err := setupLogging(ctx); err != nil {
-		os.Exit(1)
+	ctx, err := setupLogging(context.Background())
+	if err != nil {
+		log.Fatalf("failed to set up logging: %v", err)
 	}
 
 	config := new(api.KRMInput)
-	fn, err := krm.NewBuilder().SetConfig(config).Build()
+	fn, err := krm.NewBuilder().SetConfig(config).Build(ctx)
 	if err != nil {
 		log.Fatalf("failed to build KRM function: %v", err)
 	}
@@ -45,7 +44,7 @@ func main() {
 	cmd.Version = Version
 	cmd.SetVersionTemplate("v{{.Version}}")
 
-	if err := cmd.Execute(); err != nil {
+	if err := cmd.ExecuteContext(ctx); err != nil {
 		os.Exit(1)
 	}
 }
@@ -53,14 +52,6 @@ func main() {
 // setupLogging configures the global logging level based on the log level environment variable.
 func setupLogging(ctx context.Context) (context.Context, error) {
 	logLevel := os.Getenv(LogLevelEnvVar)
-	if logLevel == "" {
-		zerolog.SetGlobalLevel(zerolog.WarnLevel)
-	}
-	level, err := zerolog.ParseLevel(logLevel)
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse log level from environment variable %s: %w", LogLevelEnvVar, err)
-	}
-	zerolog.SetGlobalLevel(level)
 
 	lvl := slog.LevelInfo
 	if logLevel != "" {
