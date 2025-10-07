@@ -7,11 +7,12 @@ import (
 	"cuelang.org/go/encoding/yaml"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
 	"github.com/rs/zerolog/log"
+
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
 // processOutputs processes the outputs from the CUE model and appends them to the output slice.
-func processOutputs(unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
+func ProcessOutputs(unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
 	outputsValue := unified.LookupPath(cue.ParsePath(OutputsPath))
 	if !outputsValue.Exists() {
 		return nil, fmt.Errorf("'%s' not found in unified CUE instance", OutputsPath)
