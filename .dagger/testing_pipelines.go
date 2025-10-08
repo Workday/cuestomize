@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
+	"dagger/cuestomize/common"
 	"dagger/cuestomize/internal/dagger"
-	"dagger/cuestomize/shared"
 	"fmt"
 )
 
@@ -118,7 +118,7 @@ func (m *Cuestomize) TestWithCoverage(
 	// Create a container to run the integration tests
 	container := testContainerWithRegistryServices(
 		buildContext, registryService, registryWithAuthService, username, password).
-		WithEnvVariable(shared.IntegrationTestingVarName, "true").
+		WithEnvVariable(common.IntegrationTestingVarName, "true").
 		WithExec([]string{"go", "test", "./...", "-coverprofile=coverage.out"})
 
 	coverageFile := container.File("coverage.out")
@@ -148,8 +148,8 @@ func testContainerWithRegistryServices(buildContext *dagger.Directory, registryS
 	return repoBaseContainer(buildContext, nil).
 		WithServiceBinding("registry", registryService).
 		WithServiceBinding("registry_auth", registryWithAuthService).
-		WithEnvVariable(shared.RegistryHostVarName, "registry:5000").
-		WithEnvVariable(shared.RegistryAuthHostVarName, "registry_auth:5000").
-		WithEnvVariable(shared.RegistryUsernameVarName, username).
-		WithEnvVariable(shared.RegistryPasswordVarName, password)
+		WithEnvVariable(common.RegistryHostVarName, "registry:5000").
+		WithEnvVariable(common.RegistryAuthHostVarName, "registry_auth:5000").
+		WithEnvVariable(common.RegistryUsernameVarName, username).
+		WithEnvVariable(common.RegistryPasswordVarName, password)
 }

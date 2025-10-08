@@ -7,8 +7,7 @@ import (
 	"path"
 	"strings"
 
-	"dagger/cuestomize/shared/oci"
-
+	"github.com/Workday/cuestomize/pkg/oci"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"oras.land/oras-go/v2/registry/remote/auth"
