@@ -1,12 +1,13 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
 	"cuelang.org/go/cue"
 	registryauth "github.com/Workday/cuestomize/internal/pkg/registry_auth"
-	"github.com/rs/zerolog/log"
+	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"oras.land/oras-go/v2/registry/remote/auth"
@@ -29,7 +30,9 @@ type KRMInput struct {
 // ExtractIncludes populates the includes structure from the provided KRMInput and items.
 // It searches items for matches against the includes defined in the KRMInput's spec
 // and returns the includes map.
-func ExtractIncludes(krm *KRMInput, items []*kyaml.RNode) (Includes, error) {
+func ExtractIncludes(krm *KRMInput, items []*kyaml.RNode, ctx context.Context) (Includes, error) {
+	log := logr.FromContextOrDiscard(ctx)
+
 	includes := make(Includes)
 
 	for _, sel := range krm.Includes {
@@ -47,8 +50,7 @@ func ExtractIncludes(krm *KRMInput, items []*kyaml.RNode) (Includes, error) {
 			}
 		}
 		if includesCount == 0 {
-			// TODO: accept logger in input
-			log.Warn().Msg(fmt.Sprintf("no items matched for selector: %s", sel.String()))
+			log.V(-1).Info("no items matched for include selector", "selector", sel.String())
 		}
 	}
 

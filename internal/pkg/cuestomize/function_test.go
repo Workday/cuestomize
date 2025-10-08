@@ -120,7 +120,7 @@ func TestKRMFunction(t *testing.T) {
 
 			items := testhelpers.LoadResourceList(t, krmFuncPath, itemsPath)
 
-			krmFunc, err := NewBuilder().SetResourcesPath(tt.TestdataCUEModelPath).SetConfig(config).Build()
+			krmFunc, err := NewBuilder().SetResourcesPath(tt.TestdataCUEModelPath).SetConfig(config).Build(t.Context())
 			require.NoError(t, err, "KRMFuncBuilder failed to build KRM function")
 
 			result, err := krmFunc(items)
