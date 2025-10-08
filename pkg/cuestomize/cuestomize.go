@@ -20,7 +20,7 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 	cueCtx := cuecontext.New()
 
 	if config.RemoteModule != nil {
-		log.Info("fetching CUE model from OCI registry")
+		log.V(1).Info("fetching CUE model from OCI registry")
 		if err := oci.FetchFromRegistry(ctx, config, items, resourcesPath); err != nil {
 			return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
 		}
