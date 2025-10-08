@@ -14,7 +14,7 @@ import (
 
 // FetchFromRegistry fetches a CUE module from the remote defined in the config, and places it in the working directory.
 func FetchFromRegistry(ctx context.Context, config *api.KRMInput, items []*kyaml.RNode, workingDir string) error {
-	log := logr.FromContextOrDiscard(ctx).V(2)
+	log := logr.FromContextOrDiscard(ctx).V(4)
 
 	client, err := config.GetRemoteClient(items)
 	if err != nil {

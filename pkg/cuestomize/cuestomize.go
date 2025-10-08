@@ -20,7 +20,8 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 	cueCtx := cuecontext.New()
 
 	if config.RemoteModule != nil {
-		log.V(1).Info("fetching CUE model from OCI registry")
+		log.Error(nil, "fetching CUE model from OCI registry")
+		log.V(4).Info("fetching CUE model from OCI registry")
 		if err := oci.FetchFromRegistry(ctx, config, items, resourcesPath); err != nil {
 			return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
 		}
@@ -67,7 +68,7 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 	}
 
 	if ShouldActAsValidator(config) {
-		log.V(1).Info("cuestomize is acting in validator mode.")
+		log.V(4).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
 	return ProcessOutputs(unified, items, ctx)

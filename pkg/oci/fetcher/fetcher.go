@@ -12,7 +12,7 @@ import (
 
 // FetchFromOCIRegistry fetches an artifact from an OCI registry and stores it in the specified working directory.
 func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir, reg, repo, tag string, plainHTTP bool) error {
-	log := logr.FromContextOrDiscard(ctx)
+	log := logr.FromContextOrDiscard(ctx).V(4)
 
 	fs, err := file.New(workingDir)
 	if err != nil {
@@ -33,7 +33,7 @@ func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir,
 		return err
 	}
 
-	log.V(2).Info("fetched artifact from OCI registry",
+	log.Info("fetched artifact from OCI registry",
 		"reg", reg,
 		"repo", repo,
 		"workingDir", workingDir,

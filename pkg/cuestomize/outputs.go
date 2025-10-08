@@ -35,7 +35,7 @@ func ProcessOutputs(unified cue.Value, items []*kyaml.RNode, ctx context.Context
 			return nil, fmt.Errorf("failed to convert CUE value to kyaml.RNode: %w", err)
 		}
 
-		log.V(2).Info("adding item to output resources",
+		log.V(4).Info("adding item to output resources",
 			"kind", rNode.GetKind(), "apiVersion", rNode.GetApiVersion(), "namespace", rNode.GetNamespace(), "name", rNode.GetName())
 		items = append(items, rNode)
 	}

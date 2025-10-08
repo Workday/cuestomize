@@ -26,7 +26,8 @@ func main() {
 		panic(fmt.Errorf("failed to setup logging: %w", err))
 	}
 	log := logr.FromContextOrDiscard(ctx)
-	log.V(2).Info("starting to push examples to OCI registry")
+
+	log.V(4).Info("starting to push examples to OCI registry")
 	username := os.Getenv("OCI_USERNAME")
 	if username == "" {
 		panic("OCI_USERNAME environment variable is not set")
@@ -57,7 +58,7 @@ func main() {
 		panic(fmt.Errorf("failed to read examples directory: %w", err))
 	}
 
-	log.V(2).Info("found entries in examples directory", "entries", len(entries))
+	log.V(4).Info("found entries in examples directory", "entries", len(entries))
 
 	repositoryDirMap := make(map[string]string)
 
@@ -69,7 +70,7 @@ func main() {
 			log.Info("skipping example without cue/cue.mod file", "entry", entry.Name(), "error", err)
 			continue
 		}
-		log.V(2).Info("found example in directory", "entry", entry.Name())
+		log.V(4).Info("found example in directory", "entry", entry.Name())
 		repoName := registry + "/" + repositoryPrefix + "-" + entry.Name()
 		repositoryDirMap[repoName] = path.Join(examplesDir, entry.Name(), "cue")
 	}
@@ -78,7 +79,7 @@ func main() {
 	if latest {
 		tags = append(tags, "latest")
 	}
-	log.V(2).Info("tags to push", "tags", tags)
+	log.V(4).Info("tags to push", "tags", tags)
 
 	client := auth.DefaultClient
 
@@ -91,7 +92,7 @@ func main() {
 	for repoName, dir := range repositoryDirMap {
 		for _, t := range tags {
 			repoWithTag := repoName + ":" + t
-			log.V(2).Info("pushing to OCI registry", "repoWithTag", repoWithTag, "dir", dir)
+			log.V(4).Info("pushing to OCI registry", "repoWithTag", repoWithTag, "dir", dir)
 			_, err := oci.PushDirectoryToOCIRegistry(ctx, repoWithTag, dir, CueModuleArtifactType, t, client, false)
 			if err != nil {
 				panic(fmt.Errorf("failed to push %s to OCI registry: %w", repoWithTag, err))
