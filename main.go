@@ -42,7 +42,7 @@ func main() {
 	p := processor.NewSimpleProcessor(config, kio.FilterFunc(fn), true)
 	cmd := command.Build(p, command.StandaloneDisabled, false)
 	cmd.Version = Version
-	cmd.SetVersionTemplate("v{{.Version}}")
+	cmd.SetVersionTemplate("v{{.Version}}\n")
 
 	if err := cmd.ExecuteContext(ctx); err != nil {
 		os.Exit(1)
