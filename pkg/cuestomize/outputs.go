@@ -1,17 +1,21 @@
 package cuestomize
 
 import (
+	"context"
 	"fmt"
 
 	"cuelang.org/go/cue"
 	"cuelang.org/go/encoding/yaml"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
-	"github.com/rs/zerolog/log"
+	"github.com/go-logr/logr"
+
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
 // processOutputs processes the outputs from the CUE model and appends them to the output slice.
-func processOutputs(unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
+func ProcessOutputs(unified cue.Value, items []*kyaml.RNode, ctx context.Context) ([]*kyaml.RNode, error) {
+	log := logr.FromContextOrDiscard(ctx)
+
 	outputsValue := unified.LookupPath(cue.ParsePath(OutputsPath))
 	if !outputsValue.Exists() {
 		return nil, fmt.Errorf("'%s' not found in unified CUE instance", OutputsPath)
@@ -31,8 +35,8 @@ func processOutputs(unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, er
 			return nil, fmt.Errorf("failed to convert CUE value to kyaml.RNode: %w", err)
 		}
 
-		log.Debug().Str("apiVersion", rNode.GetApiVersion()).Str("kind", rNode.GetKind()).
-			Str("namespace", rNode.GetNamespace()).Str("name", rNode.GetName()).Msg("adding item to output resources")
+		log.V(4).Info("adding item to output resources",
+			"kind", rNode.GetKind(), "apiVersion", rNode.GetApiVersion(), "namespace", rNode.GetNamespace(), "name", rNode.GetName())
 		items = append(items, rNode)
 	}
 	return items, nil

@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"os"
 
-	"dagger/cuestomize/shared"
-	"dagger/cuestomize/shared/oci"
-
+	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
+	"github.com/Workday/cuestomize/pkg/oci"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
 
@@ -16,17 +15,17 @@ import (
 func main() {
 	ctx := context.Background()
 
-	registryNoAuthHost := os.Getenv(shared.RegistryHostVarName)
+	registryNoAuthHost := os.Getenv(testhelpers.RegistryHostVarName)
 	if registryNoAuthHost == "" {
-		panic(fmt.Sprintf("Environment variable %s is not set", shared.RegistryHostVarName))
+		panic(fmt.Sprintf("Environment variable %s is not set", testhelpers.RegistryHostVarName))
 	}
-	registryWithAuthHost := os.Getenv(shared.RegistryAuthHostVarName)
+	registryWithAuthHost := os.Getenv(testhelpers.RegistryAuthHostVarName)
 	if registryWithAuthHost == "" {
-		panic(fmt.Sprintf("Environment variable %s is not set", shared.RegistryAuthHostVarName))
+		panic(fmt.Sprintf("Environment variable %s is not set", testhelpers.RegistryAuthHostVarName))
 	}
 
-	username := os.Getenv(shared.RegistryUsernameVarName)
-	password := os.Getenv(shared.RegistryPasswordVarName)
+	username := os.Getenv(testhelpers.RegistryUsernameVarName)
+	password := os.Getenv(testhelpers.RegistryPasswordVarName)
 
 	tag := "latest"
 	artifactType := "application/vnd.cuestomize.module.v1+json"

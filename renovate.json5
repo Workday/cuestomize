@@ -11,7 +11,7 @@
                 "RegistryImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "DistrolessStaticImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "KustomizeImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
-                "GolangciLingImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\""
+                "GolangciLintImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\""
             ],
             "datasourceTemplate": "docker",
             "versioningTemplate": "docker"

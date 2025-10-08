@@ -2,6 +2,8 @@ package main
 
 import "dagger/cuestomize/internal/dagger"
 
+// Note: when updating these constants, also update renovate.json5
+// as they are updated in there through regexes.
 const (
 	// GolangImage is the Golang base image
 	GolangImage = "golang:1.25"
@@ -13,11 +15,13 @@ const (
 	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.7.1"
 	// CuelangVersion is the version of Cuelang
 	CuelangVersion = "v0.14.1"
-
-	// GolangciLintImageFmt is the format for the GolangCI-Lint image. It accepts the version as a string
-	GolangciLintImageFmt = "golangci/golangci-lint:%s-alpine"
 	// GolangciLintImage is the GolangCI-Lint image used by default
 	GolangciLintImage = "golangci/golangci-lint:v2.4.0-alpine"
+)
+
+const (
+	// GolangciLintImageFmt is the format for the GolangCI-Lint image. It accepts the version as a string
+	GolangciLintImageFmt = "golangci/golangci-lint:%s-alpine"
 )
 
 var (
