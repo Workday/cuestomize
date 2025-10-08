@@ -5,8 +5,6 @@ import (
 	"path/filepath"
 	"testing"
 
-	"dagger/cuestomize/shared"
-
 	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
 	"oras.land/oras-go/v2/registry/remote"
@@ -14,21 +12,21 @@ import (
 )
 
 func Test_FetchFromRegistry(t *testing.T) {
-	if os.Getenv(shared.IntegrationTestingVarName) != "true" {
-		t.Skipf("Skipping test because %s is not set", shared.IntegrationTestingVarName)
+	if os.Getenv(testhelpers.IntegrationTestingVarName) != "true" {
+		t.Skipf("Skipping test because %s is not set", testhelpers.IntegrationTestingVarName)
 	}
 
-	registryNoAuthHost := os.Getenv(shared.RegistryHostVarName)
+	registryNoAuthHost := os.Getenv(testhelpers.RegistryHostVarName)
 	if registryNoAuthHost == "" {
-		t.Fatalf("Environment variable %s is not set", shared.RegistryHostVarName)
+		t.Fatalf("Environment variable %s is not set", testhelpers.RegistryHostVarName)
 	}
-	registryWithAuthHost := os.Getenv(shared.RegistryAuthHostVarName)
+	registryWithAuthHost := os.Getenv(testhelpers.RegistryAuthHostVarName)
 	if registryWithAuthHost == "" {
-		t.Fatalf("Environment variable %s is not set", shared.RegistryAuthHostVarName)
+		t.Fatalf("Environment variable %s is not set", testhelpers.RegistryAuthHostVarName)
 	}
 
-	username := os.Getenv(shared.RegistryUsernameVarName)
-	password := os.Getenv(shared.RegistryPasswordVarName)
+	username := os.Getenv(testhelpers.RegistryUsernameVarName)
+	password := os.Getenv(testhelpers.RegistryPasswordVarName)
 
 	tt := []struct {
 		name          string

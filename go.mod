@@ -4,7 +4,6 @@ go 1.25.0
 
 require (
 	cuelang.org/go v0.14.1
-	dagger/cuestomize v0.0.0
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.11.1
 	k8s.io/apimachinery v0.34.1
@@ -81,5 +80,3 @@ require (
 	sigs.k8s.io/json v0.0.0-20250730193827-2d320260d730 // indirect
 	sigs.k8s.io/randfill v1.0.0 // indirect
 )
-
-replace dagger/cuestomize => ./.dagger
