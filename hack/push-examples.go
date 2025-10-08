@@ -8,8 +8,7 @@ import (
 	"path"
 	"strings"
 
-	"dagger/cuestomize/shared/oci"
-
+	"github.com/Workday/cuestomize/pkg/oci"
 	"github.com/go-logr/logr"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )

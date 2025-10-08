@@ -4,7 +4,6 @@ go 1.25.0
 
 require (
 	cuelang.org/go v0.14.1
-	dagger/cuestomize v0.0.0
 	github.com/go-logr/logr v1.4.3
 	github.com/stretchr/testify v1.11.1
 	k8s.io/apimachinery v0.34.1

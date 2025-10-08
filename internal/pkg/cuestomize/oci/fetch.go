@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/Workday/cuestomize/api"
-	"github.com/Workday/cuestomize/internal/pkg/fetcher"
+	"github.com/Workday/cuestomize/pkg/oci/fetcher"
 	"github.com/go-logr/logr"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
