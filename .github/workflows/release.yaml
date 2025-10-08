@@ -54,7 +54,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Dagger Build And Publish
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
@@ -62,7 +62,7 @@ jobs:
         LATEST: ${{ needs.prep.outputs.latest }}
         REPOSITORY: workday/cuestomize
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
 
@@ -78,7 +78,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run pipeline
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
@@ -86,6 +86,6 @@ jobs:
         TAG: ${{ needs.prep.outputs.tag_name }}
         LATEST: ${{ needs.prep.outputs.latest }}
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --tag="$TAG" --latest="$LATEST" --repositoryPrefix="$REPOSITORY_PREFIX"

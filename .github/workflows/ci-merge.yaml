@@ -15,9 +15,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Build image
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: build
 
@@ -30,9 +30,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run pipeline
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: test-with-coverage
 
@@ -45,9 +45,9 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run pipeline
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: e-2-e-test
 
@@ -62,12 +62,12 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Run pipeline
-      uses: dagger/dagger-for-github@8.0.0
+      uses: dagger/dagger-for-github@v8.2.0
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
         REPOSITORY_PREFIX: ${{ github.repository }}/cuemodules/cuestomize-examples
       with:
-        version: "0.18.14"
+        version: "0.19.0"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --repositoryPrefix="$REPOSITORY_PREFIX"
