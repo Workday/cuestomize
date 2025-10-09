@@ -6,17 +6,23 @@ import (
 	"cuelang.org/go/cue/errors"
 )
 
-// ErrorWithDetails formats an error message with additional details from the provided error.
-func ErrorWithDetails(err error, format string, args ...any) error {
-	return ErrorWithDetailsCfg(err, nil, format, args...)
+type Detailer struct {
+	Cfg errors.Config
 }
 
-// ErrorWithDetailsCfg formats an error message with additional details from the provided error
-// and uses the provided errors.Config to extract details.
-func ErrorWithDetailsCfg(err error, cfg *errors.Config, format string, args ...any) error {
+func NewDetailerWithCwd(cwd string) Detailer {
+	return Detailer{
+		Cfg: errors.Config{
+			Cwd: cwd,
+		},
+	}
+}
+
+// ErrorWithDetails formats an error message with additional details from the provided error.
+func (d *Detailer) ErrorWithDetails(err error, format string, args ...any) error {
 	errString := fmt.Sprintf(format, args...)
 
-	details := errors.Details(err, cfg)
+	details := errors.Details(err, &d.Cfg)
 
 	return fmt.Errorf("%s: %s", errString, details)
 }
