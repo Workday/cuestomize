@@ -16,7 +16,7 @@ const (
 	// CuelangVersion is the version of Cuelang
 	CuelangVersion = "v0.14.1"
 	// GolangciLintImage is the GolangCI-Lint image used by default
-	GolangciLintImage = "golangci/golangci-lint:v2.4.0-alpine"
+	GolangciLintImage = "golangci/golangci-lint:v2.5.0-alpine"
 )
 
 const (
