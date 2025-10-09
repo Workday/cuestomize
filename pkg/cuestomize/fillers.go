@@ -1,6 +1,8 @@
 package cuestomize
 
 import (
+	"context"
+
 	"cuelang.org/go/cue"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
@@ -26,13 +28,15 @@ const (
 )
 
 // FillMetadata fills the CUE schema with the API version, kind, and metadata from the KRMInput configuration.
-func FillMetadata(schema cue.Value, config *api.KRMInput) (cue.Value, error) {
+func FillMetadata(ctx context.Context, schema cue.Value, config *api.KRMInput) (cue.Value, error) {
+	detailer := cuerrors.FromContextOrDefault(ctx)
+
 	filledSchema := schema.FillPath(cue.ParsePath(APIVersionFillPath), config.APIVersion)
 	filledSchema = filledSchema.FillPath(cue.ParsePath(KindFillPath), config.Kind)
 
-	meta, err := api.IntoCueValue(schema.Context(), config.ObjectMeta)
+	meta, err := api.IntoCueValue(ctx, schema.Context(), config.ObjectMeta)
 	if err != nil {
-		return cue.Value{}, cuerrors.ErrorWithDetails(err, "failed to convert ObjectMeta into CUE value")
+		return cue.Value{}, detailer.ErrorWithDetails(err, "failed to convert ObjectMeta into CUE value")
 	}
 
 	filledSchema = filledSchema.FillPath(cue.ParsePath(MetadataFillPath), meta)

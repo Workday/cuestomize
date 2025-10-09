@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 
@@ -12,8 +13,8 @@ import (
 type Includes map[string]map[string]map[string]map[string]interface{}
 
 // IntoCueValue tries to convert the Includes into a CUE value.
-func (i Includes) IntoCueValue(ctx *cue.Context) (*cue.Value, error) {
-	return IntoCueValue(ctx, i)
+func (i Includes) IntoCueValue(ctx context.Context, cueCtx *cue.Context) (*cue.Value, error) {
+	return IntoCueValue(ctx, cueCtx, i)
 }
 
 // Add adds an include to the Includes map.

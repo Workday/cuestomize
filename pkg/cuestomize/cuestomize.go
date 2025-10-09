@@ -17,6 +17,9 @@ import (
 func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string, ctx context.Context) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 
+	detailer := cuerrors.NewDetailerWithCwd(resourcesPath)
+	ctx = cuerrors.NewContext(ctx, detailer)
+
 	cueCtx := cuecontext.New()
 
 	if config.RemoteModule != nil {
@@ -30,45 +33,45 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 	if err != nil {
 		return nil, fmt.Errorf("failed to compute includes from KRM function inputs: %w", err)
 	}
-	includesValue, err := includes.IntoCueValue(cueCtx)
+	includesValue, err := includes.IntoCueValue(ctx, cueCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert includes into CUE value: %w", err)
 	}
 
-	configValue, err := config.IntoCueValue(cueCtx)
+	configValue, err := config.IntoCueValue(ctx, cueCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert config into CUE value: %w", err)
 	}
 
-	instances, err := LoadCUEModel(resourcesPath)
+	instances, err := LoadCUEModel(ctx, resourcesPath)
 	if err != nil {
 		return nil, fmt.Errorf("failed to load CUE model from '%s': %w", resourcesPath, err)
 	}
 
-	schema, err := BuildCUEModelSchema(cueCtx, instances)
+	schema, err := BuildCUEModelSchema(ctx, cueCtx, instances)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CUE model schema: %w", err)
 	}
 
-	unified, err := FillMetadata(*schema, config)
+	unified, err := FillMetadata(ctx, *schema, config)
 	if err != nil {
 		return nil, fmt.Errorf("failed to fill metadata in CUE schema: %w", err)
 	}
 	unified = unified.FillPath(cue.ParsePath(InputFillPath), configValue)
 	unified = unified.FillPath(cue.ParsePath(IncludesFillPath), includesValue)
 	if unified.Err() != nil {
-		return nil, cuerrors.ErrorWithDetails(unified.Err(), "failed to unify CUE model with inputs from KRM function")
+		return nil, detailer.ErrorWithDetails(unified.Err(), "failed to unify CUE model with inputs from KRM function")
 	}
 
 	// assert that the unified instance values are all concrete (no string, regexes, etc.)
 	// without this check, non-valorised fields can remain in output resources
 	if err := unified.Validate(cue.Final(), cue.Concrete(true)); err != nil {
-		return nil, cuerrors.ErrorWithDetails(err, "failed to validate unified CUE instance")
+		return nil, detailer.ErrorWithDetails(err, "failed to validate unified CUE instance")
 	}
 
 	if ShouldActAsValidator(config) {
 		log.V(4).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
-	return ProcessOutputs(unified, items, ctx)
+	return ProcessOutputs(ctx, unified, items)
 }
