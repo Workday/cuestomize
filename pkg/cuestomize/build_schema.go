@@ -1,6 +1,7 @@
 package cuestomize
 
 import (
+	"context"
 	"fmt"
 
 	"cuelang.org/go/cue"
@@ -9,8 +10,10 @@ import (
 )
 
 // BuildCUEModelSchema builds a CUE model from the provided instances and returns the unified schema.
-func BuildCUEModelSchema(ctx *cue.Context, instances []*build.Instance) (*cue.Value, error) {
-	values, err := ctx.BuildInstances(instances)
+func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*build.Instance, detailers ...*cuerrors.Detailer) (*cue.Value, error) {
+	detailer := cuerrors.FromContextOrDefault(ctx)
+
+	values, err := cueCtx.BuildInstances(instances)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CUE instances: %w", err)
 	}
@@ -22,7 +25,7 @@ func BuildCUEModelSchema(ctx *cue.Context, instances []*build.Instance) (*cue.Va
 	for i := 1; i < len(values); i++ {
 		schema = schema.Unify(values[i])
 		if schema.Err() != nil {
-			return nil, cuerrors.ErrorWithDetails(schema.Err(), "failed to unify CUE model with [%v]", instances[i].BuildFiles)
+			return nil, detailer.ErrorWithDetails(schema.Err(), "failed to unify CUE model with [%v]", instances[i].BuildFiles)
 		}
 	}
 

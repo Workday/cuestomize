@@ -1,6 +1,7 @@
 package cuestomize
 
 import (
+	"context"
 	"fmt"
 
 	"cuelang.org/go/cue/build"
@@ -8,12 +9,12 @@ import (
 )
 
 // LoadCUEModel loads a CUE model from the specified path and returns the instances.
-func LoadCUEModel(path string) ([]*build.Instance, error) {
+func LoadCUEModel(ctx context.Context, path string) ([]*build.Instance, error) {
 	cfg := &load.Config{Dir: path}
 	instances := load.Instances([]string{"."}, cfg)
 	if len(instances) == 0 {
 		return nil, fmt.Errorf("no CUE instances found")
 	}
 
-	return instances, CheckInstances(instances)
+	return instances, CheckInstances(ctx, instances)
 }

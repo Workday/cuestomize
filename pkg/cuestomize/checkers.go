@@ -1,6 +1,8 @@
 package cuestomize
 
 import (
+	"context"
+
 	"cuelang.org/go/cue/build"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
@@ -14,10 +16,12 @@ const (
 )
 
 // CheckInstances checks if any of the instances have an error and returns an error if so.
-func CheckInstances(instances []*build.Instance) error {
+func CheckInstances(ctx context.Context, instances []*build.Instance) error {
+	detailer := cuerrors.FromContextOrDefault(ctx)
+
 	for _, inst := range instances {
 		if inst.Err != nil {
-			return cuerrors.ErrorWithDetails(inst.Err, "failed to load CUE instance")
+			return detailer.ErrorWithDetails(inst.Err, "failed to load CUE instance")
 		}
 	}
 	return nil

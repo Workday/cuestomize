@@ -13,14 +13,16 @@ import (
 )
 
 // processOutputs processes the outputs from the CUE model and appends them to the output slice.
-func ProcessOutputs(unified cue.Value, items []*kyaml.RNode, ctx context.Context) ([]*kyaml.RNode, error) {
+func ProcessOutputs(ctx context.Context, unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
+
+	detailer := cuerrors.FromContextOrDefault(ctx)
 
 	outputsValue := unified.LookupPath(cue.ParsePath(OutputsPath))
 	if !outputsValue.Exists() {
 		return nil, fmt.Errorf("'%s' not found in unified CUE instance", OutputsPath)
 	} else if outputsValue.Err() != nil {
-		return nil, cuerrors.ErrorWithDetails(outputsValue.Err(), "failed to lookup '%s' in unified CUE instance", OutputsPath)
+		return nil, detailer.ErrorWithDetails(outputsValue.Err(), "failed to lookup '%s' in unified CUE instance", OutputsPath)
 	}
 	outputsIter, err := getIter(outputsValue)
 	if err != nil {
