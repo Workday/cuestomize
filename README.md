@@ -1,4 +1,7 @@
 # Cuestomize
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/workday/cuestomize.svg)](https://pkg.go.dev/github.com/workday/cuestomize)
+
 Cuestomize is a Kubernetes Package Manager using CUE-lang and integrated in Kustomize.
 
 It is implemented as a Kustomize KRM function that reads a CUE model, and optionally some input resources from the Kustomize stream, and passes back to Kustomize the generated resources.

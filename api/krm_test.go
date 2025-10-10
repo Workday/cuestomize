@@ -47,7 +47,7 @@ func TestKRMInput_ExtractIncludes(t *testing.T) {
 			krmInput := testhelpers.LoadFromFile[KRMInput](t, tt.testdataDir+"/"+TestKRMInputFileName)
 			items := testhelpers.LoadResourceList(t, tt.testdataDir+"/"+TestKRMInputFileName, tt.testdataDir+"/"+TestItemsFileName)
 
-			includes, err := ExtractIncludes(krmInput, items, t.Context())
+			includes, err := ExtractIncludes(t.Context(), krmInput, items)
 
 			if tt.expectedError {
 				require.Error(t, err)

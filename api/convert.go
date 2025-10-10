@@ -1,3 +1,5 @@
+// Package api provides utilities for converting Go values into CUE values and defines
+// interfaces for types that can be converted to CUE format.
 package api
 
 import (

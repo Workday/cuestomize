@@ -1,3 +1,4 @@
+// Package main provides the Cuestomize CLI tool for Kubernetes resource management using CUE.
 package main
 
 import (

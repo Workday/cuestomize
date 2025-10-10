@@ -1,3 +1,4 @@
+// Package cuestomize provides the Cuestomize functionality.
 package cuestomize
 
 import (
@@ -10,7 +11,7 @@ import (
 )
 
 // BuildCUEModelSchema builds a CUE model from the provided instances and returns the unified schema.
-func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*build.Instance, detailers ...*cuerrors.Detailer) (*cue.Value, error) {
+func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*build.Instance) (*cue.Value, error) {
 	detailer := cuerrors.FromContextOrDefault(ctx)
 
 	values, err := cueCtx.BuildInstances(instances)

@@ -1,3 +1,4 @@
+// Package oci provides functionality for fetching CUE modules from OCI registries.
 package oci
 
 import (

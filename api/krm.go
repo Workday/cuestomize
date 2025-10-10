@@ -30,7 +30,7 @@ type KRMInput struct {
 // ExtractIncludes populates the includes structure from the provided KRMInput and items.
 // It searches items for matches against the includes defined in the KRMInput's spec
 // and returns the includes map.
-func ExtractIncludes(krm *KRMInput, items []*kyaml.RNode, ctx context.Context) (Includes, error) {
+func ExtractIncludes(ctx context.Context, krm *KRMInput, items []*kyaml.RNode) (Includes, error) {
 	log := logr.FromContextOrDiscard(ctx)
 
 	includes := make(Includes)

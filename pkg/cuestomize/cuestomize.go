@@ -14,7 +14,7 @@ import (
 )
 
 // Cuestomize generates (or validates) resources from the provided CUE configuration and input resources.
-func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string, ctx context.Context) ([]*kyaml.RNode, error) {
+func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, resourcesPath string) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 
 	detailer := cuerrors.NewDetailerWithCwd(resourcesPath)
@@ -29,7 +29,7 @@ func Cuestomize(items []*kyaml.RNode, config *api.KRMInput, resourcesPath string
 		}
 	}
 
-	includes, err := api.ExtractIncludes(config, items, ctx)
+	includes, err := api.ExtractIncludes(ctx, config, items)
 	if err != nil {
 		return nil, fmt.Errorf("failed to compute includes from KRM function inputs: %w", err)
 	}

@@ -1,3 +1,4 @@
+// Package main provides an e2e test setup utility that uploads CUE modules to local registries.
 package main
 
 import (

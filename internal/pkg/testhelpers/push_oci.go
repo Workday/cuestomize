@@ -8,7 +8,8 @@ import (
 	"oras.land/oras-go/v2/registry/remote"
 )
 
-func PushDirectoryToOCIRegistry_T(t *testing.T, reference, rootDirectory, artifactType, tag string, client remote.Client, plainHTTP bool) ocispec.Descriptor {
+// PushDirectoryToOCIRegistryT is a test helper that pushes the contents of a directory to an OCI registry.
+func PushDirectoryToOCIRegistryT(t *testing.T, reference, rootDirectory, artifactType, tag string, client remote.Client, plainHTTP bool) ocispec.Descriptor {
 	t.Helper()
 
 	descriptor, err := oci.PushDirectoryToOCIRegistry(t.Context(), reference, rootDirectory, artifactType, tag, client, plainHTTP)

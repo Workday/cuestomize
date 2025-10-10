@@ -1,3 +1,4 @@
+// Package main provides a utility to push CUE module examples to an OCI registry.
 package main
 
 import (

@@ -1,3 +1,6 @@
+// Package oci provides utilities for working with Open Container Initiative (OCI)
+// artifacts and registries, including functionality to push directory contents
+// as OCI artifacts to remote repositories.
 package oci
 
 import (

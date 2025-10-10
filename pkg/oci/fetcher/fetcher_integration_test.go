@@ -74,7 +74,7 @@ func Test_FetchFromRegistry(t *testing.T) {
 			tempDir := t.TempDir() // Directory to store the fetched artifact
 
 			// push testdata/sample-module to the registry
-			_ = testhelpers.PushDirectoryToOCIRegistry_T(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client, tc.plainHTTP)
+			_ = testhelpers.PushDirectoryToOCIRegistryT(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client, tc.plainHTTP)
 
 			// Fetch the module from the registry
 			err := FetchFromOCIRegistry(ctx, tc.client, tempDir, tc.registryHost, tc.repo, tc.tag, tc.plainHTTP)
