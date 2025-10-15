@@ -9,9 +9,12 @@ import (
 	"log/slog"
 	"os"
 
+	"golang.org/x/term"
+
 	"github.com/Workday/cuestomize/api"
 	krm "github.com/Workday/cuestomize/internal/pkg/cuestomize"
 	"github.com/Workday/cuestomize/internal/pkg/processor"
+	"github.com/spf13/cobra"
 	"github.com/go-logr/logr"
 
 	"sigs.k8s.io/kustomize/kyaml/fn/framework/command"
@@ -41,7 +44,12 @@ func main() {
 	}
 
 	p := processor.NewSimpleProcessor(config, kio.FilterFunc(fn), true)
-	cmd := command.Build(p, command.StandaloneDisabled, false)
+	cmd := &cobra.Command{}
+	if term.IsTerminal(int(os.Stdout.Fd())) {
+		cmd = command.Build(p, command.StandaloneEnabled, false)
+	} else {
+		cmd = command.Build(p, command.StandaloneDisabled, false)
+	}
 	cmd.Version = Version
 	cmd.SetVersionTemplate("v{{.Version}}\n")
 
