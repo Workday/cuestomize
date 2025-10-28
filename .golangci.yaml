@@ -1,6 +1,17 @@
 version: "2"
 
 linters:
+  enable:
+  - govet
+  - errcheck
+  - staticcheck
+  - ineffassign
+  - misspell
+  - gocritic
+  - revive
+  - gosec
+  - nolintlint
+  - gocyclo
   exclusions:
     warn-unused: true
     presets:

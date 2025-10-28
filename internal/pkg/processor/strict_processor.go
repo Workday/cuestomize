@@ -1,3 +1,4 @@
+// Package processor extends kustomize's SimpleProcessor to support strict unmarshalling of function configs.
 package processor
 
 import (

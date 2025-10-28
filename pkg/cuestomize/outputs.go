@@ -12,7 +12,7 @@ import (
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
-// processOutputs processes the outputs from the CUE model and appends them to the output slice.
+// ProcessOutputs processes the outputs from the CUE model and appends them to the output slice.
 func ProcessOutputs(ctx context.Context, unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 

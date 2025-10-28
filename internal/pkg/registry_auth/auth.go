@@ -1,3 +1,6 @@
+// Package registryauth provides utilities for configuring authentication
+// credentials for OCI registry clients, supporting both Kubernetes Secret
+// and environment variable-based credential sources.
 package registryauth
 
 import (

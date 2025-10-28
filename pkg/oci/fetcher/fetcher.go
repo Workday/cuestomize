@@ -1,3 +1,4 @@
+// Package fetcher provides functionality for fetching artifacts from OCI registries.
 package fetcher
 
 import (
