@@ -135,6 +135,7 @@ func TestIncludes_Add(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
+
 			includes := make(Includes)
 
 			for _, node := range tt.nodes {
@@ -166,5 +167,6 @@ func createTestNode(t *testing.T, apiVersion, kind, namespace, name string) *kya
 
 	node, err := kyaml.FromMap(yamlObj)
 	require.NoError(t, err)
+
 	return node
 }

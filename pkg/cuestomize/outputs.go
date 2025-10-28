@@ -24,6 +24,7 @@ func ProcessOutputs(ctx context.Context, unified cue.Value, items []*kyaml.RNode
 	} else if outputsValue.Err() != nil {
 		return nil, detailer.ErrorWithDetails(outputsValue.Err(), "failed to lookup '%s' in unified CUE instance", OutputsPath)
 	}
+
 	outputsIter, err := getIter(outputsValue)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get iterator over '%s' in unified CUE instance: %v", OutputsPath, err)
@@ -41,6 +42,7 @@ func ProcessOutputs(ctx context.Context, unified cue.Value, items []*kyaml.RNode
 			"kind", rNode.GetKind(), "apiVersion", rNode.GetApiVersion(), "namespace", rNode.GetNamespace(), "name", rNode.GetName())
 		items = append(items, rNode)
 	}
+
 	return items, nil
 }
 

@@ -2,16 +2,18 @@ version: "2"
 
 linters:
   enable:
-  - govet
   - errcheck
-  - staticcheck
+  - gocritic
+  - gocyclo
+  - gosec
+  - govet
   - ineffassign
   - misspell
-  - gocritic
-  - revive
-  - gosec
   - nolintlint
-  - gocyclo
+  - revive
+  - staticcheck
+  - usetesting
+  - wsl_v5
   exclusions:
     warn-unused: true
     presets:

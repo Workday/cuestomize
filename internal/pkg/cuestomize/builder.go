@@ -50,5 +50,6 @@ func (b *KRMFuncBuilder) Build(ctx context.Context) (func([]*kyaml.RNode) ([]*ky
 	if b.config == nil {
 		return nil, fmt.Errorf("config must be set before building the KRM function")
 	}
+
 	return newCuestomizeFunctionWithPath(ctx, b.config, &b.resourcesPath), nil
 }

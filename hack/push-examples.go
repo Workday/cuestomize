@@ -26,26 +26,33 @@ func main() {
 	if err != nil {
 		panic(fmt.Errorf("failed to setup logging: %w", err))
 	}
+
 	log := logr.FromContextOrDiscard(ctx)
 
 	log.V(4).Info("starting to push examples to OCI registry")
+
 	username := os.Getenv("OCI_USERNAME")
 	if username == "" {
 		panic("OCI_USERNAME environment variable is not set")
 	}
+
 	password := os.Getenv("OCI_PASSWORD")
 	if password == "" {
 		panic("OCI_PASSWORD environment variable is not set")
 	}
+
 	registry := os.Getenv("OCI_REGISTRY")
 	if registry == "" {
 		panic("OCI_REGISTRY environment variable is not set")
 	}
+
 	repositoryPrefix := os.Getenv("OCI_REPOSITORY_PREFIX")
 	if repositoryPrefix == "" {
 		panic("OCI_REPOSITORY_PREFIX environment variable is not set")
 	}
+
 	repositoryPrefix = strings.ToLower(repositoryPrefix)
+
 	latest := os.Getenv("IS_LATEST") == "true"
 	if len(os.Args) < 2 {
 		panic("pass tag as argument")
@@ -67,10 +74,12 @@ func main() {
 		if !entry.IsDir() {
 			continue
 		}
+
 		if _, err := os.Stat(path.Join(examplesDir, entry.Name(), "cue", "cue.mod")); err != nil {
 			log.Info("skipping example without cue/cue.mod file", "entry", entry.Name(), "error", err)
 			continue
 		}
+
 		log.V(4).Info("found example in directory", "entry", entry.Name())
 		repoName := registry + "/" + repositoryPrefix + "-" + entry.Name()
 		repositoryDirMap[repoName] = path.Join(examplesDir, entry.Name(), "cue")
@@ -80,6 +89,7 @@ func main() {
 	if latest {
 		tags = append(tags, "latest")
 	}
+
 	log.V(4).Info("tags to push", "tags", tags)
 
 	client := auth.DefaultClient
@@ -94,14 +104,17 @@ func main() {
 		for _, t := range tags {
 			repoWithTag := repoName + ":" + t
 			log.V(4).Info("pushing to OCI registry", "repoWithTag", repoWithTag, "dir", dir)
+
 			_, err := oci.PushDirectoryToOCIRegistry(ctx, repoWithTag, dir, CueModuleArtifactType, t, client, false)
 			if err != nil {
 				panic(fmt.Errorf("failed to push %s to OCI registry: %w", repoWithTag, err))
 			}
+
 			log.Info("pushed to OCI registry", "repoWithTag", repoWithTag)
 			pushedRefs = append(pushedRefs, repoWithTag)
 		}
 	}
+
 	log.Info("pushed references to OCI registry", "pushedRefs", pushedRefs)
 }
 

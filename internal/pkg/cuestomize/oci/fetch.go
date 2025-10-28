@@ -40,6 +40,7 @@ func FetchFromRegistry(ctx context.Context, config *api.KRMInput, items []*kyaml
 	); err != nil {
 		return fmt.Errorf("failed to fetch from OCI registry: %w", err)
 	}
+
 	_, err = os.Stat(filepath.Join(workingDir, "cue.mod"))
 	if err != nil {
 		log.V(-1).Info("cue.mod directory not found in artifact. This might cause Cuestomize issues interacting with the module.", "error", err)

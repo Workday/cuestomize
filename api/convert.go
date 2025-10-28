@@ -19,6 +19,7 @@ type CueConvertable interface {
 // IntoCueValue is a function that attempts to convert a given value into a cue.Value.
 func IntoCueValue(ctx context.Context, cueCtx *cue.Context, v any) (*cue.Value, error) {
 	detailer := cuerrors.FromContextOrDefault(ctx)
+
 	asBytes, err := json.Marshal(v)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal value: %w", err)
@@ -28,5 +29,6 @@ func IntoCueValue(ctx context.Context, cueCtx *cue.Context, v any) (*cue.Value, 
 	if value.Err() != nil {
 		return nil, detailer.ErrorWithDetails(value.Err(), "failed to compile value into CUE")
 	}
+
 	return &value, nil
 }

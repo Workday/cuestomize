@@ -47,5 +47,6 @@ func FromContextOrDefault(ctx context.Context) Detailer {
 	if detailer, err := FromContext(ctx); err == nil {
 		return detailer
 	}
+
 	return Detailer{}
 }

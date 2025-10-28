@@ -33,6 +33,7 @@ func ConfigureClient(registry string, authSecret *corev1.Secret) (*auth.Client, 
 	if creds != nil {
 		client.Credential = auth.StaticCredential(registry, *creds)
 	}
+
 	return client, nil
 }
 

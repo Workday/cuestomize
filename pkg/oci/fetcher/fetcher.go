@@ -24,9 +24,11 @@ func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir,
 	if err != nil {
 		return err
 	}
+
 	if client != nil {
 		repository.Client = client
 	}
+
 	repository.PlainHTTP = plainHTTP
 
 	desc, err := oras.Copy(ctx, repository, tag, fs, tag, oras.DefaultCopyOptions)

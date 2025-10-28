@@ -35,6 +35,7 @@ func main() {
 	}
 
 	config := new(api.KRMInput)
+
 	fn, err := krm.NewBuilder().SetConfig(config).Build(ctx)
 	if err != nil {
 		log.Fatalf("failed to build KRM function: %v", err)

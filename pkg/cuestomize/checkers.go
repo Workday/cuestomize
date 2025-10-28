@@ -24,6 +24,7 @@ func CheckInstances(ctx context.Context, instances []*build.Instance) error {
 			return detailer.ErrorWithDetails(inst.Err, "failed to load CUE instance")
 		}
 	}
+
 	return nil
 }
 

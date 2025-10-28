@@ -51,6 +51,7 @@ func TestKRMInput_ExtractIncludes(t *testing.T) {
 
 			if tt.expectedError {
 				require.Error(t, err)
+
 				if tt.errorSubstring != "" {
 					require.Contains(t, err.Error(), tt.errorSubstring)
 				}

@@ -24,6 +24,7 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 
 	if config.RemoteModule != nil {
 		log.V(4).Info("fetching CUE model from OCI registry")
+
 		if err := oci.FetchFromRegistry(ctx, config, items, resourcesPath); err != nil {
 			return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
 		}
@@ -33,6 +34,7 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 	if err != nil {
 		return nil, fmt.Errorf("failed to compute includes from KRM function inputs: %w", err)
 	}
+
 	includesValue, err := includes.IntoCueValue(ctx, cueCtx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert includes into CUE value: %w", err)
@@ -57,7 +59,9 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 	if err != nil {
 		return nil, fmt.Errorf("failed to fill metadata in CUE schema: %w", err)
 	}
+
 	unified = unified.FillPath(cue.ParsePath(InputFillPath), configValue)
+
 	unified = unified.FillPath(cue.ParsePath(IncludesFillPath), includesValue)
 	if unified.Err() != nil {
 		return nil, detailer.ErrorWithDetails(unified.Err(), "failed to unify CUE model with inputs from KRM function")
@@ -73,5 +77,6 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 		log.V(4).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
+
 	return ProcessOutputs(ctx, unified, items)
 }

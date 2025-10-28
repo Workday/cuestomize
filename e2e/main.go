@@ -20,6 +20,7 @@ func main() {
 	if registryNoAuthHost == "" {
 		panic(fmt.Sprintf("Environment variable %s is not set", testhelpers.RegistryHostVarName))
 	}
+
 	registryWithAuthHost := os.Getenv(testhelpers.RegistryAuthHostVarName)
 	if registryWithAuthHost == "" {
 		panic(fmt.Sprintf("Environment variable %s is not set", testhelpers.RegistryAuthHostVarName))

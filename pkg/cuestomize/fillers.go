@@ -40,5 +40,6 @@ func FillMetadata(ctx context.Context, schema cue.Value, config *api.KRMInput) (
 	}
 
 	filledSchema = filledSchema.FillPath(cue.ParsePath(MetadataFillPath), meta)
+
 	return filledSchema, nil
 }

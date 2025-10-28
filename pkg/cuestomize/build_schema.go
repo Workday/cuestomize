@@ -18,6 +18,7 @@ func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*
 	if err != nil {
 		return nil, fmt.Errorf("failed to build CUE instances: %w", err)
 	}
+
 	if len(values) == 0 {
 		return nil, fmt.Errorf("no CUE values found after building instances")
 	}

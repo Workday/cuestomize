@@ -22,9 +22,11 @@ func PushDirectoryToOCIRegistry(ctx context.Context, reference, rootDirectory, a
 	if err != nil {
 		return ocispec.Descriptor{}, fmt.Errorf("failed to create repository: %w", err)
 	}
+
 	if client != nil {
 		repo.Client = client
 	}
+
 	repo.PlainHTTP = plainHTTP
 
 	// creates an in-memory store
@@ -53,14 +55,16 @@ func PushDirectoryToOCIRegistry(ctx context.Context, reference, rootDirectory, a
 			if err != nil {
 				return fmt.Errorf("failed to add file %q to store: %w", path, err)
 			}
+
 			fileDescriptors = append(fileDescriptors, fileDescriptor)
 		}
+
 		return nil
 	})
-
 	if err != nil {
 		return ocispec.Descriptor{}, fmt.Errorf("failed to walk directory %q: %w", rootDirectory, err)
 	}
+
 	if len(fileDescriptors) == 0 {
 		return ocispec.Descriptor{}, fmt.Errorf("no files found in directory %q", rootDirectory)
 	}

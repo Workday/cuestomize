@@ -128,12 +128,12 @@ func TestKRMFunction(t *testing.T) {
 				require.Error(t, err)
 			} else {
 				require.NoError(t, err)
+
 				for _, res := range result {
 					resID := resid.FromRNode(res)
 					require.Contains(t, tt.Expected, resID, "Expected resource ID not found in result")
 				}
 			}
-
 		})
 	}
 }

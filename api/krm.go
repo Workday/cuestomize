@@ -37,18 +37,22 @@ func ExtractIncludes(ctx context.Context, krm *KRMInput, items []*kyaml.RNode) (
 
 	for _, sel := range krm.Includes {
 		includesCount := 0
+
 		for _, item := range items {
 			itemMatches, err := ItemMatchReference(item, &sel)
 			if err != nil {
 				return nil, fmt.Errorf("failed to match item against selector [%v]: %w", sel.String(), err)
 			}
+
 			if itemMatches {
 				includesCount++
+
 				if err := includes.Add(item); err != nil {
 					return nil, fmt.Errorf("failed to add include: %w", err)
 				}
 			}
 		}
+
 		if includesCount == 0 {
 			log.V(-1).Info("no items matched for include selector", "selector", sel.String())
 		}
@@ -70,6 +74,7 @@ func (i *KRMInput) IntoCueValue(ctx context.Context, cueCtx *cue.Context) (*cue.
 // check the error return value for actual errors.
 func (i *KRMInput) GetRemoteClient(items []*kyaml.RNode) (*auth.Client, error) {
 	var secret *corev1.Secret
+
 	var err error
 	if i.RemoteModule.Auth != nil {
 		secret, err = findAuthSecret(i.RemoteModule.Auth, items)
@@ -101,6 +106,7 @@ func ItemMatchReference(item *kyaml.RNode, sel *types.Selector) (bool, error) {
 	if err != nil {
 		return false, fmt.Errorf("failed to create selector regex: %w", err)
 	}
+
 	return selRe.MatchGvk(resid.GvkFromNode(item)) &&
 		selRe.MatchName(item.GetName()) &&
 		selRe.MatchNamespace(item.GetNamespace()), nil
@@ -118,6 +124,7 @@ func findAuthSecret(sel *types.Selector, items []*kyaml.RNode) (*corev1.Secret, 
 		if err != nil {
 			return nil, fmt.Errorf("failed to match item against selector: %w", err)
 		}
+
 		if matches {
 			// convert to corev1.Secret
 			bytes, err := item.MarshalJSON()
@@ -129,6 +136,7 @@ func findAuthSecret(sel *types.Selector, items []*kyaml.RNode) (*corev1.Secret, 
 			if err := json.Unmarshal(bytes, secret); err != nil {
 				return nil, fmt.Errorf("failed to unmarshal item to corev1.Secret: %w", err)
 			}
+
 			return secret, nil
 		}
 	}

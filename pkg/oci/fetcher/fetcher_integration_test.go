@@ -20,6 +20,7 @@ func Test_FetchFromRegistry(t *testing.T) {
 	if registryNoAuthHost == "" {
 		t.Fatalf("Environment variable %s is not set", testhelpers.RegistryHostVarName)
 	}
+
 	registryWithAuthHost := os.Getenv(testhelpers.RegistryAuthHostVarName)
 	if registryWithAuthHost == "" {
 		t.Fatalf("Environment variable %s is not set", testhelpers.RegistryAuthHostVarName)

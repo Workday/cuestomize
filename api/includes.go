@@ -20,11 +20,14 @@ func (i Includes) IntoCueValue(ctx context.Context, cueCtx *cue.Context) (*cue.V
 // Add adds an include to the Includes map.
 func (i Includes) Add(include *kyaml.RNode) error {
 	i.initialiseMap(include)
+
 	obj, err := toMap(include)
 	if err != nil {
 		return fmt.Errorf("failed to convert item to map: %w", err)
 	}
+
 	i[include.GetApiVersion()][include.GetKind()][include.GetNamespace()][include.GetName()] = obj
+
 	return nil
 }
 
@@ -58,9 +61,11 @@ func toMap(include *kyaml.RNode) (map[string]interface{}, error) {
 	if err != nil {
 		return nil, err
 	}
+
 	obj := make(map[string]interface{})
 	if err = json.Unmarshal(marshalled, &obj); err != nil {
 		return nil, err
 	}
+
 	return obj, nil
 }

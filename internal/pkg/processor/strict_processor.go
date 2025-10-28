@@ -39,6 +39,7 @@ func (p SimpleProcessor) Process(rl *fw.ResourceList) error {
 	if err := LoadFunctionConfig(rl.FunctionConfig, p.Config, p.Strict); err != nil {
 		return errors.WrapPrefixf(err, "loading function config")
 	}
+
 	return errors.WrapPrefixf(rl.Filter(p.Filter), "processing filter")
 }
 
@@ -51,11 +52,13 @@ func LoadFunctionConfig(src *yaml.RNode, api interface{}, strict bool) error {
 	}
 	// Run this before unmarshalling to avoid nasty unmarshal failure error messages
 	var schemaValidationError error
+
 	if s, ok := api.(fw.ValidationSchemaProvider); ok {
 		schema, err := s.Schema()
 		if err != nil {
 			return errors.WrapPrefixf(err, "loading provided schema")
 		}
+
 		schemaValidationError = errors.Wrap(validate.AgainstSchema(schema, src, strfmt.Default))
 		// don't return it yet--try to make it to custom validation stage to combine errors
 	}
@@ -72,6 +75,7 @@ func LoadFunctionConfig(src *yaml.RNode, api interface{}, strict bool) error {
 			// if we got a validation error, report it instead as it is likely a nicer version of the same message
 			return schemaValidationError
 		}
+
 		return errors.Wrap(err)
 	}
 
@@ -84,6 +88,7 @@ func LoadFunctionConfig(src *yaml.RNode, api interface{}, strict bool) error {
 	if v, ok := api.(fw.Validator); ok {
 		return combineErrors(schemaValidationError, v.Validate())
 	}
+
 	return schemaValidationError
 }
 
@@ -97,13 +102,16 @@ func combineErrors(schemaErr, customErr error) error {
 	} else if schemaErr != nil {
 		combined.Errors = append(combined.Errors, schemaErr)
 	}
+
 	if compositeCustomErr, ok := customErr.(*validationErrors.CompositeError); ok {
 		combined.Errors = append(combined.Errors, compositeCustomErr.Errors...)
 	} else if customErr != nil {
 		combined.Errors = append(combined.Errors, customErr)
 	}
+
 	if len(combined.Errors) > 0 {
 		return combined
 	}
+
 	return nil
 }
