@@ -7,8 +7,8 @@ import (
 	"cuelang.org/go/cue"
 	"cuelang.org/go/cue/cuecontext"
 	"github.com/Workday/cuestomize/api"
-	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
-	"github.com/Workday/cuestomize/internal/pkg/cuestomize/oci"
+	"github.com/Workday/cuestomize/pkg/cuerrors"
+	"github.com/Workday/cuestomize/pkg/cuestomize/oci"
 	"github.com/go-logr/logr"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
@@ -33,14 +33,14 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 	if err != nil {
 		return nil, fmt.Errorf("failed to compute includes from KRM function inputs: %w", err)
 	}
-	includesValue, err := includes.IntoCueValue(ctx, cueCtx)
+	includesValue, err := includes.IntoCueValue(cueCtx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert includes into CUE value: %w", err)
+		return nil, detailer.ErrorWithDetails(err, "failed to convert includes into CUE value")
 	}
 
-	configValue, err := config.IntoCueValue(ctx, cueCtx)
+	configValue, err := config.IntoCueValue(cueCtx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to convert config into CUE value: %w", err)
+		return nil, detailer.ErrorWithDetails(err, "failed to convert config into CUE value")
 	}
 
 	instances, err := LoadCUEModel(ctx, resourcesPath)

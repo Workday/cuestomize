@@ -12,6 +12,17 @@ import (
 	"cuelang.org/go/cue/errors"
 )
 
+// errWrapper is used to wrap the original error in the detailed answer without having it
+// appearing in the formatted string. This still allows users to get the source error after
+// formatting it with details, to preserve the errors chain.
+type errWrapper struct {
+	err error `json:"-"`
+}
+
+func (errWrapper) Error() string {
+	return ""
+}
+
 // Detailer struct can be used to format CUE errors with additional details.
 type Detailer struct {
 	Cfg errors.Config
@@ -33,5 +44,5 @@ func (d *Detailer) ErrorWithDetails(err error, format string, args ...any) error
 
 	details := errors.Details(err, &d.Cfg)
 
-	return fmt.Errorf("%s: %s", errString, details)
+	return fmt.Errorf("%s: %s%w", errString, details, errWrapper{err: err})
 }

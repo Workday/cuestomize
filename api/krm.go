@@ -61,8 +61,8 @@ func ExtractIncludes(ctx context.Context, krm *KRMInput, items []*kyaml.RNode) (
 // The method will not convert the whole KRMInput to a CUE value, but only the Input field.
 // This is because the KRMInput part that needs to be passed to the CUE model is entirely
 // contained in the Input field.
-func (i *KRMInput) IntoCueValue(ctx context.Context, cueCtx *cue.Context) (*cue.Value, error) {
-	return IntoCueValue(ctx, cueCtx, i.Input)
+func (i *KRMInput) IntoCueValue(cueCtx *cue.Context) (*cue.Value, error) {
+	return IntoCueValue(cueCtx, i.Input)
 }
 
 // GetRemoteClient returns a remote client based on the remote module configuration.
