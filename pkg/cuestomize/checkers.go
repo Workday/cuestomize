@@ -5,7 +5,7 @@ import (
 
 	"cuelang.org/go/cue/build"
 	"github.com/Workday/cuestomize/api"
-	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
+	"github.com/Workday/cuestomize/pkg/cuerrors"
 )
 
 const (

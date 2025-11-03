@@ -5,7 +5,7 @@ import (
 
 	"cuelang.org/go/cue"
 	"github.com/Workday/cuestomize/api"
-	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
+	"github.com/Workday/cuestomize/pkg/cuerrors"
 )
 
 const (
@@ -34,7 +34,7 @@ func FillMetadata(ctx context.Context, schema cue.Value, config *api.KRMInput) (
 	filledSchema := schema.FillPath(cue.ParsePath(APIVersionFillPath), config.APIVersion)
 	filledSchema = filledSchema.FillPath(cue.ParsePath(KindFillPath), config.Kind)
 
-	meta, err := api.IntoCueValue(ctx, schema.Context(), config.ObjectMeta)
+	meta, err := api.IntoCueValue(schema.Context(), config.ObjectMeta)
 	if err != nil {
 		return cue.Value{}, detailer.ErrorWithDetails(err, "failed to convert ObjectMeta into CUE value")
 	}

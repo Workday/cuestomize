@@ -7,7 +7,7 @@ import (
 
 	"cuelang.org/go/cue"
 	"cuelang.org/go/cue/build"
-	"github.com/Workday/cuestomize/internal/pkg/cuerrors"
+	"github.com/Workday/cuestomize/pkg/cuerrors"
 )
 
 // BuildCUEModelSchema builds a CUE model from the provided instances and returns the unified schema.
