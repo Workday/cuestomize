@@ -22,7 +22,6 @@ require (
 	go.opentelemetry.io/proto/otlp v1.8.0
 	golang.org/x/sync v0.17.0
 	google.golang.org/grpc v1.75.1
-	oras.land/oras-go/v2 v2.6.0
 )
 
 require (
@@ -31,8 +30,6 @@ require (
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.2 // indirect
-	github.com/opencontainers/go-digest v1.0.0 // indirect
-	github.com/opencontainers/image-spec v1.1.1
 	github.com/sosodev/duration v1.3.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.38.0 // indirect

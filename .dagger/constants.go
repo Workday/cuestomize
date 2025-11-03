@@ -14,9 +14,9 @@ const (
 	// KustomizeImage is the Kustomize image
 	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.7.1"
 	// CuelangVersion is the version of Cuelang
-	CuelangVersion = "v0.14.1"
+	CuelangVersion = "v0.14.1" // renovate: datasource=go packageName=cuelang.org/go
 	// GolangciLintImage is the GolangCI-Lint image used by default
-	GolangciLintImage = "golangci/golangci-lint:v2.5.0-alpine"
+	GolangciLintImage = "golangci/golangci-lint:v2.6.0-alpine"
 )
 
 const (
