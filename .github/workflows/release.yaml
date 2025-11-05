@@ -62,7 +62,7 @@ jobs:
         LATEST: ${{ needs.prep.outputs.latest }}
         REPOSITORY: workday/cuestomize
       with:
-        version: "0.19.0"
+        version: "0.19.4"
         verb: call
         args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
 
@@ -86,6 +86,6 @@ jobs:
         TAG: ${{ needs.prep.outputs.tag_name }}
         LATEST: ${{ needs.prep.outputs.latest }}
       with:
-        version: "0.19.0"
+        version: "0.19.4"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --tag="$TAG" --latest="$LATEST" --repositoryPrefix="$REPOSITORY_PREFIX"
