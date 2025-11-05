@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"cuelang.org/go/cue"
-	registryauth "github.com/Workday/cuestomize/internal/pkg/registry_auth"
+	registryauth "github.com/Workday/cuestomize/pkg/registry_auth"
 	"github.com/go-logr/logr"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
