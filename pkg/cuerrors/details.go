@@ -23,6 +23,10 @@ func (errWrapper) Error() string {
 	return ""
 }
 
+func (e errWrapper) Unwrap() error {
+	return e.err
+}
+
 // Detailer struct can be used to format CUE errors with additional details.
 type Detailer struct {
 	Cfg errors.Config
