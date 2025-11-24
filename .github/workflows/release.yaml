@@ -51,7 +51,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Dagger Build And Publish
       uses: dagger/dagger-for-github@v8.2.0
@@ -75,7 +75,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v5
+      uses: actions/checkout@v6
 
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.2.0
