@@ -16,9 +16,7 @@ import (
 // Cuestomize generates (or validates) resources from the provided CUE configuration and input resources.
 func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, resourcesPath string) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
-
-	detailer := cuerrors.NewDetailerWithCwd(resourcesPath)
-	ctx = cuerrors.NewContext(ctx, detailer)
+	detailer := cuerrors.FromContextOrEmpty(ctx)
 
 	cueCtx := cuecontext.New()
 

@@ -29,7 +29,7 @@ const (
 
 // FillMetadata fills the CUE schema with the API version, kind, and metadata from the KRMInput configuration.
 func FillMetadata(ctx context.Context, schema cue.Value, config *api.KRMInput) (cue.Value, error) {
-	detailer := cuerrors.FromContextOrDefault(ctx)
+	detailer := cuerrors.FromContextOrEmpty(ctx)
 
 	filledSchema := schema.FillPath(cue.ParsePath(APIVersionFillPath), config.APIVersion)
 	filledSchema = filledSchema.FillPath(cue.ParsePath(KindFillPath), config.Kind)

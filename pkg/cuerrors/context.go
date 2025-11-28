@@ -29,7 +29,7 @@ func NewContext(ctx context.Context, detailer Detailer) context.Context {
 func FromContext(ctx context.Context) (Detailer, error) {
 	v := ctx.Value(contextKey{})
 	if v == nil {
-		return Detailer{}, notFoundError{}
+		return nil, notFoundError{}
 	}
 
 	switch v := v.(type) {
@@ -41,11 +41,11 @@ func FromContext(ctx context.Context) (Detailer, error) {
 	}
 }
 
-// FromContextOrDefault returns a Detailer from ctx.  If no Detailer is found, this
-// returns a default Detailer.
-func FromContextOrDefault(ctx context.Context) Detailer {
+// FromContextOrEmpty returns a Detailer from ctx.  If no Detailer is found, this
+// returns a EmptyDetailer.
+func FromContextOrEmpty(ctx context.Context) Detailer {
 	if detailer, err := FromContext(ctx); err == nil {
 		return detailer
 	}
-	return Detailer{}
+	return EmptyDetailer{}
 }

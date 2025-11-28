@@ -17,7 +17,7 @@ const (
 
 // CheckInstances checks if any of the instances have an error and returns an error if so.
 func CheckInstances(ctx context.Context, instances []*build.Instance) error {
-	detailer := cuerrors.FromContextOrDefault(ctx)
+	detailer := cuerrors.FromContextOrEmpty(ctx)
 
 	for _, inst := range instances {
 		if inst.Err != nil {

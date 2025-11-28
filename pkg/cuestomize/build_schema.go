@@ -12,7 +12,7 @@ import (
 
 // BuildCUEModelSchema builds a CUE model from the provided instances and returns the unified schema.
 func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*build.Instance) (*cue.Value, error) {
-	detailer := cuerrors.FromContextOrDefault(ctx)
+	detailer := cuerrors.FromContextOrEmpty(ctx)
 
 	values, err := cueCtx.BuildInstances(instances)
 	if err != nil {

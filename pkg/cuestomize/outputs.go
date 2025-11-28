@@ -16,7 +16,7 @@ import (
 func ProcessOutputs(ctx context.Context, unified cue.Value, items []*kyaml.RNode) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 
-	detailer := cuerrors.FromContextOrDefault(ctx)
+	detailer := cuerrors.FromContextOrEmpty(ctx)
 
 	outputsValue := unified.LookupPath(cue.ParsePath(OutputsPath))
 	if !outputsValue.Exists() {
