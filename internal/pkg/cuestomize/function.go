@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Workday/cuestomize/api"
+	"github.com/Workday/cuestomize/pkg/cuerrors"
 	"github.com/Workday/cuestomize/pkg/cuestomize"
 
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
