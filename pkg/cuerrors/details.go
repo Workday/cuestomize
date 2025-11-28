@@ -12,6 +12,7 @@ import (
 	"cuelang.org/go/cue/errors"
 )
 
+// Detailer interface defines methods for formatting errors with additional CUE details.
 type Detailer interface {
 	// ErrorWithDetails formats an error message with additional details from the provided error.
 	ErrorWithDetails(err error, format string, args ...any) error
@@ -22,7 +23,7 @@ type DefaultDetailer struct {
 	Cfg errors.Config
 }
 
-// NewDetailerWithCwd creates a new Detailer with the specified current working directory (cwd).
+// NewDefaultDetailer creates a new DefaultDetailer with the specified current working directory (cwd).
 // In formatted errors, file paths will be made relative to this directory.
 func NewDefaultDetailer(cwd string) DefaultDetailer {
 	return DefaultDetailer{
@@ -45,8 +46,9 @@ func (d DefaultDetailer) ErrorWithDetails(err error, format string, args ...any)
 // Useful when you want the error without any CUE-specific formatting.
 type EmptyDetailer struct{}
 
+// ErrorWithDetails returns a formatted error message without any additional details.
 func (e EmptyDetailer) ErrorWithDetails(err error, format string, args ...any) error {
-	format = format + ": %w"
+	format += ": %w"
 	args = append(args, err)
 	return fmt.Errorf(format, args...)
 }
