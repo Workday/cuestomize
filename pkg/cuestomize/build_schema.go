@@ -23,8 +23,11 @@ func BuildCUEModelSchema(ctx context.Context, cueCtx *cue.Context, instances []*
 	}
 
 	schema := values[0]
-	for i := 1; i < len(values); i++ {
-		schema = schema.Unify(values[i])
+	for i, value := range values {
+		if i == 0 {
+			continue
+		}
+		schema = schema.Unify(value)
 		if schema.Err() != nil {
 			return nil, detailer.ErrorWithDetails(schema.Err(), "failed to unify CUE model with [%v]", instances[i].BuildFiles)
 		}
