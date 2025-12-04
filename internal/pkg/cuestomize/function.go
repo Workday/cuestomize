@@ -6,6 +6,7 @@ import (
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/pkg/cuerrors"
 	"github.com/Workday/cuestomize/pkg/cuestomize"
+	"github.com/Workday/cuestomize/pkg/cuestomize/model"
 
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
@@ -26,6 +27,26 @@ func newCuestomizeFunctionWithPath(ctx context.Context, config *api.KRMInput, re
 		detailer := cuerrors.NewDefaultDetailer(*resourcesPath)
 		ctx = cuerrors.NewContext(ctx, detailer)
 
-		return cuestomize.Cuestomize(ctx, items, config, *resourcesPath)
+		var provider model.Provider
+		if config.RemoteModule != nil {
+			ociProvider, err := model.NewOCIModelProviderFromConfigAndItems(config, items)
+			if err != nil {
+				return nil, err
+			}
+			provider = ociProvider
+		} else {
+			provider = model.NewLocalPathProvider(*resourcesPath)
+		}
+
+		return cuestomize.Cuestomize(ctx, items, config, cuestomize.WithModelProvider(provider))
+
+		// debug.SetMemoryLimit()
+		// instantiate detailer
+
+		// fetch module
+
+		// convert inputs to CUE values
+
+		// call Cuestomize
 	}
 }

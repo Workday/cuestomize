@@ -8,24 +8,32 @@ import (
 	"cuelang.org/go/cue/cuecontext"
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/pkg/cuerrors"
-	"github.com/Workday/cuestomize/pkg/cuestomize/oci"
 	"github.com/go-logr/logr"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
 // Cuestomize generates (or validates) resources from the provided CUE configuration and input resources.
-func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, resourcesPath string) ([]*kyaml.RNode, error) {
+func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, opts ...func(*CustomizeOptions)) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 	detailer := cuerrors.FromContextOrEmpty(ctx)
 
-	cueCtx := cuecontext.New()
-
-	if config.RemoteModule != nil {
-		log.V(4).Info("fetching CUE model from OCI registry")
-		if err := oci.FetchFromRegistry(ctx, config, items, resourcesPath); err != nil {
-			return nil, fmt.Errorf("failed to fetch from OCI registry: %w", err)
-		}
+	var cuestomizeOpts CustomizeOptions
+	for _, opt := range opts {
+		opt(&cuestomizeOpts)
 	}
+
+	if err := cuestomizeOpts.validate(); err != nil {
+		return nil, fmt.Errorf("invalid configuration: %w", err)
+	}
+
+	err := cuestomizeOpts.ModelProvider.Get(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get CUE model from provider: %w", err)
+	}
+
+	resourcesPath := cuestomizeOpts.ModelProvider.Path()
+
+	cueCtx := cuecontext.New()
 
 	includes, err := api.ExtractIncludes(ctx, config, items)
 	if err != nil {
