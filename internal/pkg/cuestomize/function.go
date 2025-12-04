@@ -39,14 +39,5 @@ func newCuestomizeFunctionWithPath(ctx context.Context, config *api.KRMInput, re
 		}
 
 		return cuestomize.Cuestomize(ctx, items, config, cuestomize.WithModelProvider(provider))
-
-		// debug.SetMemoryLimit()
-		// instantiate detailer
-
-		// fetch module
-
-		// convert inputs to CUE values
-
-		// call Cuestomize
 	}
 }
