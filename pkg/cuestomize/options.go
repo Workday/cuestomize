@@ -6,12 +6,12 @@ import (
 	"github.com/Workday/cuestomize/pkg/cuestomize/model"
 )
 
-// CustomizeOptions holds configuration options for the Cuestomize function.
-type CustomizeOptions struct {
+// CuestomizeOptions holds configuration options for the Cuestomize function.
+type CuestomizeOptions struct {
 	ModelProvider model.Provider
 }
 
-func (o *CustomizeOptions) validate() error {
+func (o *CuestomizeOptions) validate() error {
 	if o.ModelProvider == nil {
 		return fmt.Errorf("model provider is required")
 	}
@@ -19,8 +19,8 @@ func (o *CustomizeOptions) validate() error {
 }
 
 // WithModelProvider sets the model provider to use for fetching the CUE model.
-func WithModelProvider(provider model.Provider) func(*CustomizeOptions) {
-	return func(opts *CustomizeOptions) {
+func WithModelProvider(provider model.Provider) func(*CuestomizeOptions) {
+	return func(opts *CuestomizeOptions) {
 		opts.ModelProvider = provider
 	}
 }
