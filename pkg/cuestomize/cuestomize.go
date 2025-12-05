@@ -13,11 +13,11 @@ import (
 )
 
 // Cuestomize generates (or validates) resources from the provided CUE configuration and input resources.
-func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, opts ...func(*CuestomizeOptions)) ([]*kyaml.RNode, error) {
+func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput, opts ...Option) ([]*kyaml.RNode, error) {
 	log := logr.FromContextOrDiscard(ctx)
 	detailer := cuerrors.FromContextOrEmpty(ctx)
 
-	var cuestomizeOpts CuestomizeOptions
+	var cuestomizeOpts options
 	for _, opt := range opts {
 		opt(&cuestomizeOpts)
 	}

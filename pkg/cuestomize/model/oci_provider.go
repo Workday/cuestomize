@@ -13,6 +13,9 @@ import (
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
 
+// OCIOption defines a functional option for configuring OCIModelProvider.
+type OCIOption func(*ociModelProviderOptions)
+
 // ociModelProviderOptions holds configuration options for OCIModelProvider.
 type ociModelProviderOptions struct {
 	Registry   string
@@ -24,7 +27,7 @@ type ociModelProviderOptions struct {
 }
 
 // WithRemote configures the OCI remote to fetch the CUE model from.
-func WithRemote(registry, repo, tag string) func(*ociModelProviderOptions) {
+func WithRemote(registry, repo, tag string) OCIOption {
 	return func(opts *ociModelProviderOptions) {
 		opts.Registry = registry
 		opts.Repo = repo
@@ -33,21 +36,21 @@ func WithRemote(registry, repo, tag string) func(*ociModelProviderOptions) {
 }
 
 // WithPlainHTTP configures whether to use plain HTTP when fetching from the OCI registry.
-func WithPlainHTTP(plainHTTP bool) func(*ociModelProviderOptions) {
+func WithPlainHTTP(plainHTTP bool) OCIOption {
 	return func(opts *ociModelProviderOptions) {
 		opts.PlainHTTP = plainHTTP
 	}
 }
 
 // WithWorkingDir configures the working directory where the CUE model will be stored.
-func WithWorkingDir(workingDir string) func(*ociModelProviderOptions) {
+func WithWorkingDir(workingDir string) OCIOption {
 	return func(opts *ociModelProviderOptions) {
 		opts.WorkingDir = workingDir
 	}
 }
 
 // WithClient configures the OCI registry client to use when fetching the CUE model.
-func WithClient(client *auth.Client) func(*ociModelProviderOptions) {
+func WithClient(client *auth.Client) OCIOption {
 	return func(opts *ociModelProviderOptions) {
 		opts.Client = client
 	}
@@ -80,7 +83,7 @@ func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.
 }
 
 // New creates a new OCIModelProvider with the given options.
-func New(opts ...func(*ociModelProviderOptions)) (*OCIModelProvider, error) {
+func New(opts ...OCIOption) (*OCIModelProvider, error) {
 	options := &ociModelProviderOptions{}
 	for _, opt := range opts {
 		opt(options)
