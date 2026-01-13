@@ -17,3 +17,8 @@ linters:
     presets:
     - std-error-handling
     - common-false-positives
+  settings:
+    revive:
+      directives:
+      - exclude:
+        - var-naming
