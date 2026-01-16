@@ -9,6 +9,7 @@ import (
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/pkg/oci/fetcher"
 	"github.com/go-logr/logr"
+	"oras.land/oras-go/v2/registry"
 	"oras.land/oras-go/v2/registry/remote/auth"
 	kyaml "sigs.k8s.io/kustomize/kyaml/yaml"
 )
@@ -18,20 +19,26 @@ type OCIOption func(*ociModelProviderOptions)
 
 // ociModelProviderOptions holds configuration options for OCIModelProvider.
 type ociModelProviderOptions struct {
-	Registry   string
-	Repo       string
-	Tag        string
+	Reference  registry.Reference
 	PlainHTTP  bool
 	Client     *auth.Client
 	WorkingDir string
 }
 
-// WithRemote configures the OCI remote to fetch the CUE model from.
-func WithRemote(registry, repo, tag string) OCIOption {
+// WithRemote configures the OCI remote to fetch the CUE model from an OCI registry.
+//
+// Panics if the provided registry, repo, and tag do not form a valid OCI reference.
+func WithRemote(reg, repo, tag string) OCIOption {
+	reference := fmt.Sprintf("%s/%s", reg, repo)
+	if tag != "" {
+		reference = fmt.Sprintf("%s:%s", reference, tag)
+	}
+	ref, err := registry.ParseReference(reference)
+	if err != nil {
+		panic(fmt.Sprintf("invalid reference: %v", err))
+	}
 	return func(opts *ociModelProviderOptions) {
-		opts.Registry = registry
-		opts.Repo = repo
-		opts.Tag = tag
+		opts.Reference = ref
 	}
 }
 
@@ -58,9 +65,7 @@ func WithClient(client *auth.Client) OCIOption {
 
 // OCIModelProvider is a model provider that fetches the CUE model from an OCI registry.
 type OCIModelProvider struct {
-	registry   string
-	repo       string
-	tag        string
+	reference  registry.Reference
 	plainHTTP  bool
 	workingDir string
 	client     *auth.Client
@@ -114,9 +119,7 @@ func New(opts ...OCIOption) (*OCIModelProvider, error) {
 	}
 
 	return &OCIModelProvider{
-		registry:   options.Registry,
-		repo:       options.Repo,
-		tag:        options.Tag,
+		reference:  options.Reference,
 		plainHTTP:  options.PlainHTTP,
 		workingDir: options.WorkingDir,
 		client:     options.Client,
@@ -130,8 +133,12 @@ func (p *OCIModelProvider) Path() string {
 
 // Get fetches the CUE model from the OCI registry and stores it in the working directory.
 func (p *OCIModelProvider) Get(ctx context.Context) error {
+	registry := p.reference.Registry
+	repo := p.reference.Repository
+	tag := p.reference.Reference
+
 	log := logr.FromContextOrDiscard(ctx).V(4).WithValues(
-		"registry", p.registry, "repo", p.repo, "tag", p.tag, "workingDir", p.workingDir,
+		"registry", registry, "repo", repo, "tag", tag, "workingDir", p.workingDir,
 	)
 
 	log.Info("fetching from OCI registry", "plainHTTP", p.plainHTTP)
@@ -140,9 +147,9 @@ func (p *OCIModelProvider) Get(ctx context.Context) error {
 		ctx,
 		p.client,
 		p.workingDir,
-		p.registry,
-		p.repo,
-		p.tag,
+		registry,
+		repo,
+		tag,
 		p.plainHTTP,
 	)
 	if err != nil {

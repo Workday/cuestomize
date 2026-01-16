@@ -1,9 +1,7 @@
 package api
 
 import (
-	"fmt"
-	"strings"
-
+	"oras.land/oras-go/v2/registry"
 	"sigs.k8s.io/kustomize/api/types"
 )
 
@@ -34,8 +32,8 @@ type RemoteModule struct {
 // GetRegistry returns the registry, preferring Ref over the deprecated Registry field.
 func (r *RemoteModule) GetRegistry() (string, error) {
 	if r.Ref != "" {
-		registry, _, _, err := parseOCIRef(r.Ref)
-		return registry, err
+		ref, err := registry.ParseReference(r.Ref)
+		return ref.Registry, err
 	}
 	return r.Registry, nil
 }
@@ -43,8 +41,8 @@ func (r *RemoteModule) GetRegistry() (string, error) {
 // GetRepo returns the repository, preferring Ref over the deprecated Repo field.
 func (r *RemoteModule) GetRepo() (string, error) {
 	if r.Ref != "" {
-		_, repo, _, err := parseOCIRef(r.Ref)
-		return repo, err
+		ref, err := registry.ParseReference(r.Ref)
+		return ref.Repository, err
 	}
 	return r.Repo, nil
 }
@@ -52,38 +50,8 @@ func (r *RemoteModule) GetRepo() (string, error) {
 // GetTag returns the tag, preferring Ref over the deprecated Tag field.
 func (r *RemoteModule) GetTag() (string, error) {
 	if r.Ref != "" {
-		_, _, tag, err := parseOCIRef(r.Ref)
-		return tag, err
+		ref, err := registry.ParseReference(r.Ref)
+		return ref.Reference, err
 	}
 	return r.Tag, nil
-}
-
-// parseOCIRef parses a full OCI reference into its components.
-// Example: "ghcr.io/workday/my-module:v1.0.0" -> ("ghcr.io", "workday/my-module", "v1.0.0", nil)
-// If no tag is specified, returns "latest" as the tag.
-func parseOCIRef(ref string) (registry, repo, tag string, err error) {
-	// Split by colon to separate tag
-	tagParts := strings.Split(ref, ":")
-	if len(tagParts) > 2 {
-		return "", "", "", fmt.Errorf("invalid OCI reference format: %s (multiple colons found)", ref)
-	}
-
-	// Get tag or default to "latest"
-	if len(tagParts) == 2 {
-		tag = tagParts[1]
-	} else {
-		tag = "latest"
-	}
-
-	// Split by slash to separate registry and repo
-	pathWithRegistry := tagParts[0]
-	parts := strings.Split(pathWithRegistry, "/")
-	if len(parts) < 2 {
-		return "", "", "", fmt.Errorf("invalid OCI reference format: %s (expected format: registry/repo:tag)", ref)
-	}
-
-	registry = parts[0]
-	repo = strings.Join(parts[1:], "/")
-
-	return registry, repo, tag, nil
 }
