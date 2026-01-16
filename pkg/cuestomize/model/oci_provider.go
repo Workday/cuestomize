@@ -75,8 +75,20 @@ func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.
 	if err != nil {
 		return nil, fmt.Errorf("failed to configure remote client: %w", err)
 	}
+	registry, err := config.RemoteModule.GetRegistry()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get registry: %w", err)
+	}
+	repo, err := config.RemoteModule.GetRepo()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get repo: %w", err)
+	}
+	tag, err := config.RemoteModule.GetTag()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get tag: %w", err)
+	}
 	return New(
-		WithRemote(config.RemoteModule.Registry, config.RemoteModule.Repo, config.RemoteModule.Tag),
+		WithRemote(registry, repo, tag),
 		WithPlainHTTP(config.RemoteModule.PlainHTTP),
 		WithClient(client),
 	)

@@ -78,7 +78,11 @@ func (i *KRMInput) GetRemoteClient(items []*kyaml.RNode) (*auth.Client, error) {
 		}
 	}
 
-	return registryauth.ConfigureClient(i.RemoteModule.Registry, secret)
+	registry, err := i.RemoteModule.GetRegistry()
+	if err != nil {
+		return nil, fmt.Errorf("failed to get registry: %w", err)
+	}
+	return registryauth.ConfigureClient(registry, secret)
 }
 
 // ItemMatchReference checks if the given item matches the provided selector.
