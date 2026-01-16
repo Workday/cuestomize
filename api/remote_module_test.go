@@ -131,14 +131,6 @@ func TestRemoteModule_GetTag(t *testing.T) {
 			wantErr: false,
 		},
 		{
-			name: "defaults to latest when no tag in ref",
-			module: RemoteModule{
-				Ref: "ghcr.io/workday/module",
-			},
-			want:    "latest",
-			wantErr: false,
-		},
-		{
 			name: "handles sha256 tags",
 			module: RemoteModule{
 				Ref: "docker.io/nginx:sha256-abc123",

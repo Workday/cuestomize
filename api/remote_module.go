@@ -1,6 +1,8 @@
 package api
 
 import (
+	"fmt"
+
 	"oras.land/oras-go/v2/registry"
 	"sigs.k8s.io/kustomize/api/types"
 )
@@ -29,29 +31,13 @@ type RemoteModule struct {
 	PlainHTTP bool            `yaml:"plainHTTP,omitempty" json:"plainHTTP,omitempty"`
 }
 
-// GetRegistry returns the registry, preferring Ref over the deprecated Registry field.
-func (r *RemoteModule) GetRegistry() (string, error) {
+func (r *RemoteModule) GetReference() (registry.Reference, error) {
 	if r.Ref != "" {
-		ref, err := registry.ParseReference(r.Ref)
-		return ref.Registry, err
+		return registry.ParseReference(r.Ref)
 	}
-	return r.Registry, nil
-}
-
-// GetRepo returns the repository, preferring Ref over the deprecated Repo field.
-func (r *RemoteModule) GetRepo() (string, error) {
-	if r.Ref != "" {
-		ref, err := registry.ParseReference(r.Ref)
-		return ref.Repository, err
+	referenceStr := fmt.Sprintf("%s/%s", r.Registry, r.Repo)
+	if r.Tag != "" {
+		referenceStr = fmt.Sprintf("%s:%s", referenceStr, r.Tag)
 	}
-	return r.Repo, nil
-}
-
-// GetTag returns the tag, preferring Ref over the deprecated Tag field.
-func (r *RemoteModule) GetTag() (string, error) {
-	if r.Ref != "" {
-		ref, err := registry.ParseReference(r.Ref)
-		return ref.Reference, err
-	}
-	return r.Tag, nil
+	return registry.ParseReference(referenceStr)
 }
