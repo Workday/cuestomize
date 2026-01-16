@@ -25,10 +25,10 @@ type ociModelProviderOptions struct {
 	WorkingDir string
 }
 
-// WithRemote configures the OCI remote to fetch the CUE model from an OCI registry.
+// WithRemoteParts configures the OCI remote to fetch the CUE model from an OCI registry.
 //
 // Panics if the provided registry, repo, and tag do not form a valid OCI reference.
-func WithRemote(reg, repo, tag string) OCIOption {
+func WithRemoteParts(reg, repo, tag string) OCIOption {
 	reference := fmt.Sprintf("%s/%s", reg, repo)
 	if tag != "" {
 		reference = fmt.Sprintf("%s:%s", reference, tag)
@@ -37,6 +37,12 @@ func WithRemote(reg, repo, tag string) OCIOption {
 	if err != nil {
 		panic(fmt.Sprintf("invalid reference: %v", err))
 	}
+	return func(opts *ociModelProviderOptions) {
+		opts.Reference = ref
+	}
+}
+
+func WithRemote(ref registry.Reference) OCIOption {
 	return func(opts *ociModelProviderOptions) {
 		opts.Reference = ref
 	}
@@ -93,7 +99,7 @@ func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.
 		return nil, fmt.Errorf("failed to get tag: %w", err)
 	}
 	return New(
-		WithRemote(registry, repo, tag),
+		WithRemoteParts(registry, repo, tag),
 		WithPlainHTTP(config.RemoteModule.PlainHTTP),
 		WithClient(client),
 	)
