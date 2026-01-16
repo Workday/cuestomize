@@ -34,7 +34,8 @@ type RemoteModule struct {
 // GetRegistry returns the registry, preferring Ref over the deprecated Registry field.
 func (r *RemoteModule) GetRegistry() (string, error) {
 	if r.Ref != "" {
-		return parseRegistry(r.Ref)
+		registry, _, _, err := parseOCIRef(r.Ref)
+		return registry, err
 	}
 	return r.Registry, nil
 }
@@ -42,7 +43,8 @@ func (r *RemoteModule) GetRegistry() (string, error) {
 // GetRepo returns the repository, preferring Ref over the deprecated Repo field.
 func (r *RemoteModule) GetRepo() (string, error) {
 	if r.Ref != "" {
-		return parseRepo(r.Ref)
+		_, repo, _, err := parseOCIRef(r.Ref)
+		return repo, err
 	}
 	return r.Repo, nil
 }
@@ -50,42 +52,38 @@ func (r *RemoteModule) GetRepo() (string, error) {
 // GetTag returns the tag, preferring Ref over the deprecated Tag field.
 func (r *RemoteModule) GetTag() (string, error) {
 	if r.Ref != "" {
-		return parseTag(r.Ref)
+		_, _, tag, err := parseOCIRef(r.Ref)
+		return tag, err
 	}
 	return r.Tag, nil
 }
 
-// parseRegistry extracts the registry from a full OCI reference.
-// Example: "ghcr.io/workday/my-module:v1.0.0" -> "ghcr.io"
-func parseRegistry(ref string) (string, error) {
-	// Remove tag if present
-	ref = strings.Split(ref, ":")[0]
-	parts := strings.Split(ref, "/")
-	if len(parts) < 2 {
-		return "", fmt.Errorf("invalid OCI reference format: %s (expected format: registry/repo:tag)", ref)
+// parseOCIRef parses a full OCI reference into its components.
+// Example: "ghcr.io/workday/my-module:v1.0.0" -> ("ghcr.io", "workday/my-module", "v1.0.0", nil)
+// If no tag is specified, returns "latest" as the tag.
+func parseOCIRef(ref string) (registry, repo, tag string, err error) {
+	// Split by colon to separate tag
+	tagParts := strings.Split(ref, ":")
+	if len(tagParts) > 2 {
+		return "", "", "", fmt.Errorf("invalid OCI reference format: %s (multiple colons found)", ref)
 	}
-	return parts[0], nil
-}
 
-// parseRepo extracts the repository path from a full OCI reference.
-// Example: "ghcr.io/workday/my-module:v1.0.0" -> "workday/my-module"
-func parseRepo(ref string) (string, error) {
-	// Remove tag if present
-	ref = strings.Split(ref, ":")[0]
-	parts := strings.Split(ref, "/")
-	if len(parts) < 2 {
-		return "", fmt.Errorf("invalid OCI reference format: %s (expected format: registry/repo:tag)", ref)
+	// Get tag or default to "latest"
+	if len(tagParts) == 2 {
+		tag = tagParts[1]
+	} else {
+		tag = "latest"
 	}
-	return strings.Join(parts[1:], "/"), nil
-}
 
-// parseTag extracts the tag from a full OCI reference.
-// Example: "ghcr.io/workday/my-module:v1.0.0" -> "v1.0.0"
-// If no tag is specified, returns "latest".
-func parseTag(ref string) (string, error) {
-	parts := strings.Split(ref, ":")
+	// Split by slash to separate registry and repo
+	pathWithRegistry := tagParts[0]
+	parts := strings.Split(pathWithRegistry, "/")
 	if len(parts) < 2 {
-		return "latest", nil
+		return "", "", "", fmt.Errorf("invalid OCI reference format: %s (expected format: registry/repo:tag)", ref)
 	}
-	return parts[len(parts)-1], nil
+
+	registry = parts[0]
+	repo = strings.Join(parts[1:], "/")
+
+	return registry, repo, tag, nil
 }
