@@ -1,12 +1,14 @@
 package fetcher
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/Workday/cuestomize/internal/pkg/testhelpers"
 	"github.com/stretchr/testify/require"
+	"oras.land/oras-go/v2/registry"
 	"oras.land/oras-go/v2/registry/remote"
 	"oras.land/oras-go/v2/registry/remote/auth"
 )
@@ -76,8 +78,11 @@ func Test_FetchFromRegistry(t *testing.T) {
 			// push testdata/sample-module to the registry
 			_ = testhelpers.PushDirectoryToOCIRegistryT(t, tc.registryHost+"/"+tc.repo+":"+tc.tag, tc.testdataDir, tc.artifactType, tc.tag, tc.client, tc.plainHTTP)
 
+			ref, err := registry.ParseReference(fmt.Sprintf("%s/%s:%s", tc.registryHost, tc.repo, tc.tag))
+			require.NoError(t, err, "failed to parse OCI reference")
+
 			// Fetch the module from the registry
-			err := FetchFromOCIRegistry(ctx, tc.client, tempDir, tc.registryHost, tc.repo, tc.tag, tc.plainHTTP)
+			err = FetchFromOCIRegistry(ctx, tc.client, tempDir, ref, tc.plainHTTP)
 			if !tc.shouldError {
 				require.NoError(t, err, "failed to fetch module from OCI registry")
 				// verify that tempDir contains the expected files
