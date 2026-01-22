@@ -21,10 +21,3 @@ input:
 remoteModule:
   ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
 ```
-
-| Field      | Description                                                       |
-| ---------- | ----------------------------------------------------------------- |
-| `ref`      | The full OCI reference in the format `registry/repo:tag`          |
-| `registry` | (Deprecated) The OCI registry host (e.g., `ghcr.io`, `docker.io`) |
-| `repo`     | (Deprecated) The repository path to your CUE module               |
-| `tag`      | (Deprecated) The tag/version to pull                              |

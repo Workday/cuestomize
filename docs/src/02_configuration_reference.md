@@ -1,4 +1,4 @@
-# Configuration Reference
+# Function Configuration Reference
 
 This section documents all configurable fields for a Cuestomize KRM function configuration.
 
@@ -117,6 +117,24 @@ The power lies in the ability to let CUE "infer" some values from the kustomize 
 The `includes` field is a list of resource selectors, and resources matching one of the selectors will be forwarded to the CUE model in the `includes` field.
 
 ### Remote Module
+
+| Field       | Type   | Description                                                       |
+| ----------- | ------ | ----------------------------------------------------------------- |
+| `auth`      | object | (Optional) Resource selector for secret containing credentials    |
+| `ref`       | string | The full OCI reference in the format `registry/repo:tag`          |
+| `registry`  | string | (Deprecated) The OCI registry host (e.g., `ghcr.io`, `docker.io`) |
+| `repo`      | string | (Deprecated) The repository path to your CUE module               |
+| `tag`       | string | (Deprecated) The tag/version to pull                              |
+| `plainHTTP` | bool   | (Optional) Whether to use plain HTTP instead of HTTPS             |
+
+### Auth
+
+TODO: add description
+
+| Field | Type | Description |
+| ----- | ---- | ----------- |
+
+TODO: fill this table when we support auth secrets
 
 ### Example
 
