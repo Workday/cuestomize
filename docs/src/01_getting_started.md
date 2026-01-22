@@ -22,6 +22,7 @@ In your kustomization directory, you need to add a file that holds the configura
 ### Create the KRM Function Configuration File
 
 Change directory, and create a file named `krm-func.yaml` in the kustomization directory:
+
 ```bash
 # We assume you have git cloned the repo locally and are in the root directory of the repo
 cd examples/simple/kustomize
@@ -34,13 +35,14 @@ touch krm-func.yaml
 ### Update the Kustomization File
 
 Edit the `kustomization.yaml` file to add the `krm-func.yaml` file to the `transformers` section:
+
 ```yaml
 kind: Kustomization
 
 # ... other sections ...
 
 transformers:
-- krm-func.yaml
+  - krm-func.yaml
 ```
 
 ## 03. Configuring the KRM Function
@@ -48,6 +50,7 @@ transformers:
 Edit the `krm-func.yaml` file to configure the KRM function that will run Cuestomize.
 
 Here is an example configuration:
+
 ```yaml
 apiVersion: cuestomize.dev/v1alpha1
 kind: Cuestomization
@@ -62,15 +65,15 @@ metadata:
 input:
   configMapName: example-configmap
 includes:
-- group: apps
-  version: v1
-  kind: Deployment
-  name: example-deployment
-  namespace: example-namespace
-- version: v1
-  kind: Service
-  name: example-service
-  namespace: example-namespace
+  - group: apps
+    version: v1
+    kind: Deployment
+    name: example-deployment
+    namespace: example-namespace
+  - version: v1
+    kind: Service
+    name: example-service
+    namespace: example-namespace
 remoteModule:
   registry: ghcr.io
   repo: workday/cuestomize/cuemodules/cuestomize-examples-simple
@@ -87,10 +90,12 @@ remoteModule:
 Now that you have everything set up, you can run Kustomize to generate the manifests.
 
 Since Cuestomize is a KRM function, you'll need a few extra flags in order for `kustomize build` to work properly:
+
 - `--enable-alpha-plugins` to enable the KRM function
 - `--network` if your CUE model is pulled from a registry (can be omitted if the model is local to the function's image).
 
 ### Build the Manifests
+
 ```shell
 kustomize build . --enable-alpha-plugins --network
 ```
