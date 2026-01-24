@@ -47,6 +47,8 @@ func (m *Cuestomize) E2E_Test(
 	}
 	cuestomizeBinary := cuestomize.File("/workspace/cuestomize")
 
+	cuestomizeTar := cuestomize.AsTarball()
+
 	testdataDir := buildContext.Directory("e2e/testdata")
 
 	// setup registryNoAuth without authentication
@@ -56,13 +58,13 @@ func (m *Cuestomize) E2E_Test(
 	}
 	defer registryService.Stop(ctx)
 
-	_, err = dag.Container().WithServiceBinding("registry", registryService).
-		Publish(ctx, "registry:5000/cuestomize:latest", dagger.ContainerPublishOpts{
-			PlatformVariants: []*dagger.Container{cuestomize},
-		})
-	if err != nil {
-		return fmt.Errorf("failed to publish cuestomize to registry: %w", err)
-	}
+	// _, err = dag.Container().WithServiceBinding("registry", registryService).
+	// 	Publish(ctx, "registry:5000/cuestomize:latest", dagger.ContainerPublishOpts{
+	// 		PlatformVariants: []*dagger.Container{cuestomize},
+	// 	})
+	// if err != nil {
+	// 	return fmt.Errorf("failed to publish cuestomize to registry: %w", err)
+	// }
 
 	// setup registryWithAuth with authentication
 	username := "registryuser"
@@ -80,14 +82,26 @@ func (m *Cuestomize) E2E_Test(
 		return fmt.Errorf("failed to run e2e tests: %w", err)
 	}
 
+	dindService := m.dind()
+
 	dockerCli := dag.Container().From("docker:cli")
+	// Load the image into DIND and tag it
+	_, err = dockerCli.
+		WithServiceBinding("docker-host", dindService).
+		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
+		WithFile("/tmp/image.tar", cuestomizeTar).
+		WithExec([]string{"docker", "load", "-i", "/tmp.image.tar"}).
+		WithExec([]string{"docker", "tag", ref, "ghcr.io/workday/cuestomize:latest"}).Sync(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to load cuestomize image into dind: %w", err)
+	}
 
 	// run e2e tests
 	// TODO: save output to file and extract it for comparison
 	kustomize := dag.Container().From(KustomizeImage).
 		WithServiceBinding("registry", registryService).
 		WithServiceBinding("registry_auth", registryWithAuthService).
-		WithServiceBinding("docker-host", m.dind()).
+		WithServiceBinding("docker-host", dindService).
 		// WithUnixSocket("unix:///var/run/docker.sock", sock).
 		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
 		WithDirectory("/testdata", testdataDir).
