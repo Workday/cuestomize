@@ -41,11 +41,11 @@ func (m *Cuestomize) E2E_Test(
 	// sock *dagger.Socket,
 ) error {
 	// build cuestomize
-	cuestomize, err := cuestomizeBuilderContainer(buildContext, "").Sync(ctx)
+	cuestomize, err := m.Build(ctx, buildContext, "", "")
 	if err != nil {
 		return fmt.Errorf("failed to build cuestomize: %w", err)
 	}
-	cuestomizeBinary := cuestomize.File("/workspace/cuestomize")
+	cuestomizeBinary := cuestomize.File("/usr/local/bin/cuestomize")
 
 	cuestomizeTar := cuestomize.AsTarball()
 
@@ -82,7 +82,24 @@ func (m *Cuestomize) E2E_Test(
 		return fmt.Errorf("failed to run e2e tests: %w", err)
 	}
 
-	dindService := m.dind()
+	dind := dag.Container().
+		From("docker:dind").
+		WithEnvVariable("TINI_SUBREAPER", "true").
+		WithServiceBinding("registry_auth", registryWithAuthService).
+		WithMountedCache("/var/lib/docker", dag.CacheVolume("dind-data")).
+		WithExposedPort(2375).AsService(dagger.ContainerAsServiceOpts{
+		Args: []string{
+			"dockerd", "--tls=false", "--host=tcp://0.0.0.0:2375",
+		},
+		InsecureRootCapabilities: true,
+		UseEntrypoint:            true,
+	})
+
+	dindService, err := dind.Start(ctx)
+	if err != nil {
+		return fmt.Errorf("failed to start dind: %w", err)
+	}
+	defer dindService.Stop(ctx)
 
 	dockerCli := dag.Container().From("docker:cli")
 	// Load the image into DIND and tag it
@@ -90,8 +107,12 @@ func (m *Cuestomize) E2E_Test(
 		WithServiceBinding("docker-host", dindService).
 		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
 		WithFile("/tmp/image.tar", cuestomizeTar).
-		WithExec([]string{"docker", "load", "-i", "/tmp.image.tar"}).
-		WithExec([]string{"docker", "tag", ref, "ghcr.io/workday/cuestomize:latest"}).Sync(ctx)
+		WithExec([]string{"sh", "-c", `
+		SOURCE=$(docker load -i /tmp/image.tar -q | cut -d' ' -f 4)
+		docker tag $SOURCE cuestomize:latest
+		`}).Sync(ctx)
+	// WithExec([]string{"docker", "load", "-i", "/tmp.image.tar"}).
+	// WithExec([]string{"docker", "tag", "", "ghcr.io/workday/cuestomize:latest"}).Sync(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load cuestomize image into dind: %w", err)
 	}
@@ -102,7 +123,6 @@ func (m *Cuestomize) E2E_Test(
 		WithServiceBinding("registry", registryService).
 		WithServiceBinding("registry_auth", registryWithAuthService).
 		WithServiceBinding("docker-host", dindService).
-		// WithUnixSocket("unix:///var/run/docker.sock", sock).
 		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
 		WithDirectory("/testdata", testdataDir).
 		WithFile("/bin/cuestomize", cuestomizeBinary).
@@ -111,14 +131,12 @@ func (m *Cuestomize) E2E_Test(
 		WithNewFile(
 			"/testdata/kustomize-auth/.env.secret",
 			fmt.Sprintf(e2eCredSecretContentFmt, username, password),
-		).WithExec([]string{"docker", "image", "ls"})
+		)
 	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with no auth e2e failed: %w", err)
 	}
 
-	kustomize = kustomize.WithoutDirectory("/cue-resources").WithDirectory("/cue-resources", dag.Directory())
-
-	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
+	if _, err := kustomize.Terminal().WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with auth e2e failed: %w", err)
 	}
 
@@ -186,7 +204,6 @@ func (m *Cuestomize) dind() *dagger.Service {
 		InsecureRootCapabilities: true,
 		UseEntrypoint:            true,
 	})
-
 }
 
 // testContainerWithRegistryServices returns a repoBaseContainer with registry and registry_auth services bound.

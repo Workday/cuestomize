@@ -32,6 +32,19 @@ func (m *Cuestomize) Build(
 	return container, nil
 }
 
+func (m *Cuestomize) Save(
+	ctx context.Context,
+	// +defaultPath=./
+	buildContext *dagger.Directory,
+	// +default=""
+	platform string,
+	// +default=""
+	ldflags string) *dagger.File {
+	container, _ := m.Build(ctx, buildContext, string(platform), ldflags)
+
+	return container.AsTarball()
+}
+
 func (m *Cuestomize) BuildAndPublish(
 	ctx context.Context,
 	username string,
