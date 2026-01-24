@@ -38,6 +38,7 @@ func (m *Cuestomize) E2E_Test(
 	ctx context.Context,
 	// +defaultPath=./
 	buildContext *dagger.Directory,
+	// sock *dagger.Socket,
 ) error {
 	// build cuestomize
 	cuestomize, err := cuestomizeBuilderContainer(buildContext, "").Sync(ctx)
@@ -55,6 +56,14 @@ func (m *Cuestomize) E2E_Test(
 	}
 	defer registryService.Stop(ctx)
 
+	_, err = dag.Container().WithServiceBinding("registry", registryService).
+		Publish(ctx, "registry:5000/cuestomize:latest", dagger.ContainerPublishOpts{
+			PlatformVariants: []*dagger.Container{cuestomize},
+		})
+	if err != nil {
+		return fmt.Errorf("failed to publish cuestomize to registry: %w", err)
+	}
+
 	// setup registryWithAuth with authentication
 	username := "registryuser"
 	password := "password"
@@ -71,18 +80,24 @@ func (m *Cuestomize) E2E_Test(
 		return fmt.Errorf("failed to run e2e tests: %w", err)
 	}
 
+	dockerCli := dag.Container().From("docker:cli")
+
 	// run e2e tests
 	// TODO: save output to file and extract it for comparison
 	kustomize := dag.Container().From(KustomizeImage).
 		WithServiceBinding("registry", registryService).
 		WithServiceBinding("registry_auth", registryWithAuthService).
+		WithServiceBinding("docker-host", m.dind()).
+		// WithUnixSocket("unix:///var/run/docker.sock", sock).
+		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
 		WithDirectory("/testdata", testdataDir).
 		WithFile("/bin/cuestomize", cuestomizeBinary).
+		WithFile("/usr/local/bin/docker", dockerCli.File("/usr/local/bin/docker")).
 		WithDirectory("/cue-resources", dag.Directory()).
 		WithNewFile(
 			"/testdata/kustomize-auth/.env.secret",
 			fmt.Sprintf(e2eCredSecretContentFmt, username, password),
-		)
+		).WithExec([]string{"docker", "image", "ls"})
 	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with no auth e2e failed: %w", err)
 	}
@@ -143,6 +158,21 @@ func setupRegistryServiceWithAuth(ctx context.Context, username, password string
 		WithEnvVariable("REGISTRY_AUTH_HTPASSWD_PATH", "/auth/htpasswd").
 		WithEnvVariable("REGISTRY_AUTH_HTPASSWD_REALM", "Dagger Registry")
 	return registryWithAuth.AsService().Start(ctx)
+}
+
+func (m *Cuestomize) dind() *dagger.Service {
+	return dag.Container().
+		From("docker:dind").
+		WithEnvVariable("TINI_SUBREAPER", "true").
+		WithMountedCache("/var/lib/docker", dag.CacheVolume("dind-data")).
+		WithExposedPort(2375).AsService(dagger.ContainerAsServiceOpts{
+		Args: []string{
+			"dockerd", "--tls=false", "--host=tcp://0.0.0.0:2375",
+		},
+		InsecureRootCapabilities: true,
+		UseEntrypoint:            true,
+	})
+
 }
 
 // testContainerWithRegistryServices returns a repoBaseContainer with registry and registry_auth services bound.
