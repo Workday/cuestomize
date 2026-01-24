@@ -111,8 +111,6 @@ func (m *Cuestomize) E2E_Test(
 		SOURCE=$(docker load -i /tmp/image.tar -q | cut -d' ' -f 4)
 		docker tag $SOURCE cuestomize:latest
 		`}).Sync(ctx)
-	// WithExec([]string{"docker", "load", "-i", "/tmp.image.tar"}).
-	// WithExec([]string{"docker", "tag", "", "ghcr.io/workday/cuestomize:latest"}).Sync(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to load cuestomize image into dind: %w", err)
 	}
@@ -136,7 +134,7 @@ func (m *Cuestomize) E2E_Test(
 		return fmt.Errorf("kustomize with no auth e2e failed: %w", err)
 	}
 
-	if _, err := kustomize.Terminal().WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
+	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with auth e2e failed: %w", err)
 	}
 
