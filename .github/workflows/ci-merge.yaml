@@ -19,7 +19,7 @@ jobs:
       with:
         version: "0.19.10"
         verb: call
-        args: build
+        args: build --ldflags="-s -w"
 
   test:
     name: Test

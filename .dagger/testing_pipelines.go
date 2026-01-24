@@ -40,7 +40,7 @@ func (m *Cuestomize) E2E_Test(
 	buildContext *dagger.Directory,
 ) error {
 	// build cuestomize
-	cuestomize, err := cuestomizeBuilderContainer(buildContext).Sync(ctx)
+	cuestomize, err := cuestomizeBuilderContainer(buildContext, "").Sync(ctx)
 	if err != nil {
 		return fmt.Errorf("failed to build cuestomize: %w", err)
 	}
@@ -83,11 +83,13 @@ func (m *Cuestomize) E2E_Test(
 			"/testdata/kustomize-auth/.env.secret",
 			fmt.Sprintf(e2eCredSecretContentFmt, username, password),
 		)
-	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "--enable-exec", "/testdata/kustomize"}).Sync(ctx); err != nil {
+	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with no auth e2e failed: %w", err)
 	}
 
-	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "--enable-exec", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
+	kustomize = kustomize.WithoutDirectory("/cue-resources").WithDirectory("/cue-resources", dag.Directory())
+
+	if _, err := kustomize.WithExec([]string{"kustomize", "build", "--enable-alpha-plugins", "--network", "/testdata/kustomize-auth"}).Sync(ctx); err != nil {
 		return fmt.Errorf("kustomize with auth e2e failed: %w", err)
 	}
 
