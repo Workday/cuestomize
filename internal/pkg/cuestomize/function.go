@@ -29,7 +29,7 @@ func newCuestomizeFunctionWithPath(ctx context.Context, config *api.KRMInput, re
 
 		var provider model.Provider
 		if config.RemoteModule != nil {
-			ociProvider, err := model.NewOCIModelProviderFromConfigAndItems(config, items)
+			ociProvider, err := model.NewOCIModelProviderFromConfigAndItems(config, items, model.WithWorkingDir(*resourcesPath))
 			if err != nil {
 				return nil, err
 			}

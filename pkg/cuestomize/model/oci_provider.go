@@ -78,7 +78,7 @@ type OCIModelProvider struct {
 }
 
 // NewOCIModelProviderFromConfigAndItems creates a new OCIModelProvider based on the provided KRMInput configuration and input items.
-func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.RNode) (*OCIModelProvider, error) {
+func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.RNode, opts ...OCIOption) (*OCIModelProvider, error) {
 	if config.RemoteModule == nil {
 		return nil, fmt.Errorf("remote module configuration is missing")
 	}
@@ -92,11 +92,11 @@ func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.
 		return nil, fmt.Errorf("failed to get reference: %w", err)
 	}
 
-	return New(
-		WithRemote(reference),
-		WithPlainHTTP(config.RemoteModule.PlainHTTP),
-		WithClient(client),
-	)
+	opts = append(opts, WithRemote(reference))
+	opts = append(opts, WithPlainHTTP(config.RemoteModule.PlainHTTP))
+	opts = append(opts, WithClient(client))
+
+	return New(opts...)
 }
 
 // New creates a new OCIModelProvider with the given options.
