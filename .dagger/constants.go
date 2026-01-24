@@ -29,6 +29,8 @@ var (
 		Exclude: []string{
 			".go-version", "README.md",
 			".vscode", "examples",
+			".dagger", "docs",
 		},
+		Gitignore: true,
 	}
 )

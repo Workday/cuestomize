@@ -41,10 +41,8 @@ func (m *Cuestomize) E2E_Test(
 	// sock *dagger.Socket,
 ) error {
 	// build cuestomize
-	cuestomize, err := m.Build(ctx, buildContext, "", "")
-	if err != nil {
-		return fmt.Errorf("failed to build cuestomize: %w", err)
-	}
+	cuestomize := m.Build(ctx, buildContext, "", "")
+
 	cuestomizeBinary := cuestomize.File("/usr/local/bin/cuestomize")
 
 	cuestomizeTar := cuestomize.AsTarball()
@@ -188,20 +186,6 @@ func setupRegistryServiceWithAuth(ctx context.Context, username, password string
 		WithEnvVariable("REGISTRY_AUTH_HTPASSWD_PATH", "/auth/htpasswd").
 		WithEnvVariable("REGISTRY_AUTH_HTPASSWD_REALM", "Dagger Registry")
 	return registryWithAuth.AsService().Start(ctx)
-}
-
-func (m *Cuestomize) dind() *dagger.Service {
-	return dag.Container().
-		From("docker:dind").
-		WithEnvVariable("TINI_SUBREAPER", "true").
-		WithMountedCache("/var/lib/docker", dag.CacheVolume("dind-data")).
-		WithExposedPort(2375).AsService(dagger.ContainerAsServiceOpts{
-		Args: []string{
-			"dockerd", "--tls=false", "--host=tcp://0.0.0.0:2375",
-		},
-		InsecureRootCapabilities: true,
-		UseEntrypoint:            true,
-	})
 }
 
 // testContainerWithRegistryServices returns a repoBaseContainer with registry and registry_auth services bound.

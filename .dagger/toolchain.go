@@ -12,11 +12,7 @@ func (m *Cuestomize) GoGenerate(
 	// +defaultPath=./
 	buildContext *dagger.Directory,
 ) *dagger.Container {
-	container := repoBaseContainer(buildContext, &dagger.ContainerWithDirectoryOpts{
-		Exclude: []string{
-			".go-version", "README.md", ".vscode",
-		},
-	}).
+	container := repoBaseContainer(buildContext, nil).
 		WithExec([]string{"go", "install", fmt.Sprintf("cuelang.org/go/cmd/cue@%s", CuelangVersion)}).
 		WithExec([]string{"go", "generate", "./..."})
 	return container
