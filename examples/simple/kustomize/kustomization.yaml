@@ -7,20 +7,5 @@ resources:
 
 namespace: example-namespace
 
-# transformers:
-# - krm-func.yaml
-
-functions:
-- type: transformer
-  spec:
-    container:
-      image: myimage:latest #ghcr.io/workday/cuestomize:0.3.0
-      network: true
-  path: krm-func.yaml
-
-# functions:
-# - type: transformer
-#   spec:
-#     image: ghcr.io/workday/cuestomize:latest
-#     network: true
-#   path: krm-func.yaml
+transformers:
+- krm-func.yaml
