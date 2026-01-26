@@ -13,7 +13,7 @@ func (m *Cuestomize) Build(
 	platform string,
 	// +default=""
 	ldflags string,
-) (*dagger.Container, error) {
+) *dagger.Container {
 	containerOpts := dagger.ContainerOpts{}
 	if platform != "" {
 		containerOpts.Platform = dagger.Platform(platform)
@@ -29,7 +29,7 @@ func (m *Cuestomize) Build(
 		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
 		WithEntrypoint([]string{"/usr/local/bin/cuestomize"})
 
-	return container, nil
+	return container
 }
 
 func (m *Cuestomize) BuildAndPublish(
@@ -73,10 +73,7 @@ func (m *Cuestomize) BuildAndPublish(
 
 	platformVariants := make([]*dagger.Container, 0, len(platforms))
 	for _, platform := range platforms {
-		container, err := m.Build(ctx, buildContext, string(platform), ldflags)
-		if err != nil {
-			return err
-		}
+		container := m.Build(ctx, buildContext, string(platform), ldflags)
 		platformVariants = append(platformVariants, container)
 	}
 

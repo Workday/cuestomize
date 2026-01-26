@@ -5,8 +5,9 @@ metadata:
   annotations:
     config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
-      exec:
-        path: /bin/cuestomize
+      container:
+        image: cuestomize:latest
+        network: true
 input:
   configMapName: example-configmap
 includes:
@@ -20,9 +21,7 @@ includes:
   name: example-service
   namespace: example-namespace
 remoteModule:
-  registry: registry_auth:5000
-  repo: sample-module
-  tag: latest
+  ref: registry_auth:5000/sample-module:latest
   auth:
     kind: Secret
     name: regcred
