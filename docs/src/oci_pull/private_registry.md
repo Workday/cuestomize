@@ -46,12 +46,13 @@ The secret must be in the kustomize input stream to the function in order for it
 
 #### Auth Secret Configuration
 
-Several secret structures are supported, to accommodate different ways of storing credentials.
+The following structure types are supported for the auth secret:
 
-| Structure Type | Description                                                                                        |
-| -------------- | -------------------------------------------------------------------------------------------------- |
-| `Secret`       | Standard Kubernetes Secret with `username` and `password` fields in the `data` or `stringData`     |
-| `DockerConfig` | Kubernetes Secret of type `kubernetes.io/dockerconfigjson`, containing a `.dockerconfigjson` field |
+| Structure Type | Description                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------------- |
+| `Secret`       | Standard Kubernetes Secret with `username` and `password` fields in the `data` or `stringData` |
+
+> Support may be expanded in the future to include other types, such as Docker config files.
 
 ##### Structure Type – `Secret`
 
@@ -66,10 +67,8 @@ The full list of supported fields is the following:
 | `accessToken`  | `REGISTRY_ACCESS_TOKEN`  | (Optional) The registry access token  |
 | `refreshToken` | `REGISTRY_REFRESH_TOKEN` | (Optional) The registry refresh token |
 
-##### Structure Type – `DockerConfig`
-
-TODO: document
-
 ### Environment Variables (Discouraged)
 
 This method of passing credentials is discouraged and may be removed in future kustomize versions, but is documented here for completeness, and because it may be useful when developing to quickly iterate.
+
+TODO: document
