@@ -56,14 +56,6 @@ func (m *Cuestomize) E2E_Test(
 	}
 	defer registryService.Stop(ctx)
 
-	// _, err = dag.Container().WithServiceBinding("registry", registryService).
-	// 	Publish(ctx, "registry:5000/cuestomize:latest", dagger.ContainerPublishOpts{
-	// 		PlatformVariants: []*dagger.Container{cuestomize},
-	// 	})
-	// if err != nil {
-	// 	return fmt.Errorf("failed to publish cuestomize to registry: %w", err)
-	// }
-
 	// setup registryWithAuth with authentication
 	username := "registryuser"
 	password := "password"
