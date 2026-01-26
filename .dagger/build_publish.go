@@ -11,6 +11,8 @@ func (m *Cuestomize) Build(
 	buildContext *dagger.Directory,
 	// +default=""
 	platform string,
+	// +default=""
+	ldflags string,
 ) (*dagger.Container, error) {
 	containerOpts := dagger.ContainerOpts{}
 	if platform != "" {
@@ -18,7 +20,7 @@ func (m *Cuestomize) Build(
 	}
 
 	// Build stage: compile the Go binary
-	builder := cuestomizeBuilderContainer(buildContext, containerOpts)
+	builder := cuestomizeBuilderContainer(buildContext, ldflags, containerOpts)
 
 	// Final stage: create the runtime container with distroless
 	container := dag.Container(containerOpts).
@@ -39,6 +41,8 @@ func (m *Cuestomize) BuildAndPublish(
 	// +default="ghcr.io"
 	registry string,
 	repository string,
+	// +default="-s -w"
+	ldflags string,
 	tag string,
 	// +default=false
 	alsoTagAsLatest bool,
@@ -69,7 +73,7 @@ func (m *Cuestomize) BuildAndPublish(
 
 	platformVariants := make([]*dagger.Container, 0, len(platforms))
 	for _, platform := range platforms {
-		container, err := m.Build(ctx, buildContext, string(platform))
+		container, err := m.Build(ctx, buildContext, string(platform), ldflags)
 		if err != nil {
 			return err
 		}
