@@ -2,7 +2,7 @@
 
 This section will guide you through the steps to get started with Cuestomize.
 
-## 01. The CUE Model
+## The CUE Model
 
 To get started with Cuestomize, you need to create a CUE module that defines your manifest generation logic.
 
@@ -10,7 +10,7 @@ You can either create your own CUE model from scratch, or use an existing one.
 
 How to create CUE models that are compatible with Cuestomize is explained in different sections of this book, so we will use one of the existing models for this example.
 
-## 02. The Kustomization
+## The Kustomization
 
 You need to have a Kustomization directory that you can use to run Kustomize.
 In this directory, you need to create a `kustomization.yaml` file that defines the resources you want to manage with Kustomize.
@@ -22,6 +22,7 @@ In your kustomization directory, you need to add a file that holds the configura
 ### Create the KRM Function Configuration File
 
 Change directory, and create a file named `krm-func.yaml` in the kustomization directory:
+
 ```bash
 # We assume you have git cloned the repo locally and are in the root directory of the repo
 cd examples/simple/kustomize
@@ -34,20 +35,22 @@ touch krm-func.yaml
 ### Update the Kustomization File
 
 Edit the `kustomization.yaml` file to add the `krm-func.yaml` file to the `transformers` section:
+
 ```yaml
 kind: Kustomization
 
 # ... other sections ...
 
 transformers:
-- krm-func.yaml
+  - krm-func.yaml
 ```
 
-## 03. Configuring the KRM Function
+## Configuring the KRM Function
 
 Edit the `krm-func.yaml` file to configure the KRM function that will run Cuestomize.
 
 Here is an example configuration:
+
 ```yaml
 apiVersion: cuestomize.dev/v1alpha1
 kind: Cuestomization
@@ -62,19 +65,17 @@ metadata:
 input:
   configMapName: example-configmap
 includes:
-- group: apps
-  version: v1
-  kind: Deployment
-  name: example-deployment
-  namespace: example-namespace
-- version: v1
-  kind: Service
-  name: example-service
-  namespace: example-namespace
+  - group: apps
+    version: v1
+    kind: Deployment
+    name: example-deployment
+    namespace: example-namespace
+  - version: v1
+    kind: Service
+    name: example-service
+    namespace: example-namespace
 remoteModule:
-  registry: ghcr.io
-  repo: workday/cuestomize/cuemodules/cuestomize-examples-simple
-  tag: latest
+  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
 ```
 
 > **Note:** Cuestomize does not constrain the `apiVersion` and `kind` fields of the KRM function configuration,
@@ -82,15 +83,17 @@ remoteModule:
 > on the other hand, you can constrain these to specific values in order to ensure compatibility between the model
 > and the function's configuration.
 
-## 04. Running Kustomize to Generate the Manifests
+## Running Kustomize to Generate the Manifests
 
 Now that you have everything set up, you can run Kustomize to generate the manifests.
 
 Since Cuestomize is a KRM function, you'll need a few extra flags in order for `kustomize build` to work properly:
+
 - `--enable-alpha-plugins` to enable the KRM function
 - `--network` if your CUE model is pulled from a registry (can be omitted if the model is local to the function's image).
 
 ### Build the Manifests
+
 ```shell
 kustomize build . --enable-alpha-plugins --network
 ```
