@@ -40,11 +40,11 @@ func (m *Cuestomize) Build(
 		panic("failed to get git commit: " + err.Error())
 	}
 
-	container := dag.Container(containerOpts).
-		From(DistrolessStaticImage).
-		WithDirectory("/cue-resources", dag.Directory(), dagger.ContainerWithDirectoryOpts{Owner: "nobody"}).
-		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
-		WithEntrypoint([]string{"/usr/local/bin/cuestomize"}).
+	container := buildContext.DockerBuild(dagger.DirectoryDockerBuildOpts{
+		Dockerfile: "Containerfile",
+	})
+
+	container = container.
 		WithAnnotation("org.opencontainers.image.title", "Cuestomize").
 		WithAnnotation("org.opencontainers.image.description", "KRM function integrating CUE with Kustomize for Kubernetes configuration management").
 		WithAnnotation("org.opencontainers.image.documentation", "https://workday.github.io/cuestomize").
