@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"dagger/cuestomize/internal/dagger"
+	"fmt"
 )
 
 func (m *Cuestomize) Build(
@@ -19,15 +20,9 @@ func (m *Cuestomize) Build(
 		containerOpts.Platform = dagger.Platform(platform)
 	}
 
-	// Build stage: compile the Go binary
-	builder := cuestomizeBuilderContainer(buildContext, ldflags, containerOpts)
-
-	// Final stage: create the runtime container with distroless
-	container := dag.Container(containerOpts).
-		From(DistrolessStaticImage).
-		WithDirectory("/cue-resources", dag.Directory(), dagger.ContainerWithDirectoryOpts{Owner: "nobody"}).
-		WithFile("/usr/local/bin/cuestomize", builder.File("/workspace/cuestomize")).
-		WithEntrypoint([]string{"/usr/local/bin/cuestomize"})
+	container := buildContext.DockerBuild(dagger.DirectoryDockerBuildOpts{
+		Dockerfile: "Containerfile",
+	})
 
 	return container
 }
@@ -83,7 +78,7 @@ func (m *Cuestomize) BuildAndPublish(
 	}
 	for _, t := range tags {
 		_, err := dag.Container().WithRegistryAuth(registry, username, password).
-			Publish(ctx, registry+"/"+repository+":"+t, dagger.ContainerPublishOpts{
+			Publish(ctx, fmt.Sprintf("%v/%v:%v", registry, repository, t), dagger.ContainerPublishOpts{
 				PlatformVariants: platformVariants,
 			})
 		if err != nil {
