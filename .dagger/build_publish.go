@@ -99,7 +99,7 @@ func (m *Cuestomize) BuildAndPublish(
 	}
 	for _, t := range tags {
 		_, err := dag.Container().WithRegistryAuth(registry, username, password).
-			Publish(ctx, registry+"/"+repository+":"+t, dagger.ContainerPublishOpts{
+			Publish(ctx, fmt.Sprintf("%v/%v:%v", registry, repository, t), dagger.ContainerPublishOpts{
 				PlatformVariants: platformVariants,
 			})
 		if err != nil {
