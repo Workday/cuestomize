@@ -28,8 +28,7 @@ var (
 	DefaultExcludedOpts = dagger.ContainerWithDirectoryOpts{
 		Exclude: []string{
 			".go-version", "README.md",
-			".vscode", "examples",
-			".dagger", "docs",
+			".vscode", ".dagger", "docs",
 		},
 		Gitignore: true,
 	}
