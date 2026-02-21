@@ -51,7 +51,7 @@ func (i Includes) initialiseMap(include *kyaml.RNode) {
 	}
 }
 
-// toMap converts a kyaml.RNode YAML contento to a map[string]interface{}.
+// toMap converts a kyaml.RNode YAML content to a map[string]interface{}.
 func toMap(include *kyaml.RNode) (map[string]interface{}, error) {
 	marshalled, err := include.MarshalJSON()
 	if err != nil {
