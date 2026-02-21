@@ -1,6 +1,6 @@
 module github.com/Workday/cuestomize
 
-go 1.25.5
+go 1.26
 
 require (
 	cuelang.org/go v0.15.4
@@ -10,8 +10,8 @@ require (
 	k8s.io/apimachinery v0.35.1
 	k8s.io/kube-openapi v0.0.0-20260127142750-a19766b6e2d4
 	oras.land/oras-go/v2 v2.6.0
-	sigs.k8s.io/kustomize/api v0.21.0
-	sigs.k8s.io/kustomize/kyaml v0.21.0
+	sigs.k8s.io/kustomize/api v0.21.1
+	sigs.k8s.io/kustomize/kyaml v0.21.1
 	sigs.k8s.io/yaml v1.6.0
 )
 
