@@ -134,8 +134,9 @@ func TestFindAuthSecret(t *testing.T) {
 			},
 			items: []*kyaml.RNode{
 				func() *kyaml.RNode {
+					t.Helper()
 					node := createTestNode(t, "v1", "Secret", "default", "labeled-secret")
-					node.SetLabels(map[string]string{"app": "my-app"})
+					require.NoError(t, node.SetLabels(map[string]string{"app": "my-app"}))
 					return node
 				}(),
 			},
