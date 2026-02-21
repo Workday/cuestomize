@@ -6,17 +6,17 @@ import "dagger/cuestomize/internal/dagger"
 // as they are updated in there through regexes.
 const (
 	// GolangImage is the Golang base image
-	GolangImage = "golang:1.25"
+	GolangImage = "golang:1.26"
 	// RegistryImage is image for local container registry
 	RegistryImage = "registry:3"
 	// DistrolessStaticImage is the distroless static image
 	DistrolessStaticImage = "gcr.io/distroless/static:latest"
 	// KustomizeImage is the Kustomize image
-	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.7.1"
+	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.8.1"
 	// CuelangVersion is the version of Cuelang
 	CuelangVersion = "v0.15.4"
 	// GolangciLintImage is the GolangCI-Lint image used by default
-	GolangciLintImage = "golangci/golangci-lint:v2.8.0-alpine"
+	GolangciLintImage = "golangci/golangci-lint:v2.10.1-alpine"
 )
 
 const (
