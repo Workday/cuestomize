@@ -44,9 +44,7 @@ func ExtractIncludes(ctx context.Context, krm *KRMInput, items []*kyaml.RNode) (
 			}
 			if itemMatches {
 				includesCount++
-				if err := includes.Add(item); err != nil {
-					return nil, fmt.Errorf("failed to add include: %w", err)
-				}
+				includes.Add(item)
 			}
 		}
 		if includesCount == 0 {

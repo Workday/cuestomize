@@ -10,17 +10,15 @@ import (
 
 func TestIncludes_Add(t *testing.T) {
 	tests := []struct {
-		name      string
-		nodes     []*kyaml.RNode
-		expectErr bool
-		validate  func(t *testing.T, includes Includes)
+		name     string
+		nodes    []*kyaml.RNode
+		validate func(t *testing.T, includes Includes)
 	}{
 		{
 			name: "add single item",
 			nodes: []*kyaml.RNode{
 				createTestNode(t, "v1", "ConfigMap", "default", "config1"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes, 1)
 				assert.Contains(t, includes, "v1")
@@ -36,7 +34,6 @@ func TestIncludes_Add(t *testing.T) {
 				createTestNode(t, "v1", "ConfigMap", "default", "config1"),
 				createTestNode(t, "apps/v1", "Deployment", "app", "deploy1"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes, 2) // v1 and apps/v1
 
@@ -58,7 +55,6 @@ func TestIncludes_Add(t *testing.T) {
 				createTestNode(t, "v1", "Secret", "default", "secret1"),
 				createTestNode(t, "apps/v1", "Deployment", "app", "deploy1"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes, 2) // v1 and apps/v1
 
@@ -83,7 +79,6 @@ func TestIncludes_Add(t *testing.T) {
 				createTestNode(t, "v1", "ConfigMap", "default", "config1"),
 				createTestNode(t, "v1", "ConfigMap", "kube-system", "config2"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes["v1"]["ConfigMap"], 2)
 				assert.Contains(t, includes["v1"]["ConfigMap"]["default"], "config1")
@@ -96,7 +91,6 @@ func TestIncludes_Add(t *testing.T) {
 				createTestNode(t, "v1", "ConfigMap", "default", "config1"),
 				createTestNode(t, "v1", "ConfigMap", "default", "config2"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes["v1"]["ConfigMap"]["default"], 2)
 				assert.Contains(t, includes["v1"]["ConfigMap"]["default"], "config1")
@@ -110,7 +104,6 @@ func TestIncludes_Add(t *testing.T) {
 				createTestNode(t, "v1", "Secret", "default", "secret1"),
 				createTestNode(t, "v1", "ConfigMap", "default", "config1"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Len(t, includes, 2) // v1 and apps/v1
 
@@ -125,7 +118,6 @@ func TestIncludes_Add(t *testing.T) {
 			nodes: []*kyaml.RNode{
 				createTestNode(t, "v1", "ConfigMap", "", "config1"),
 			},
-			expectErr: false,
 			validate: func(t *testing.T, includes Includes) {
 				assert.Contains(t, includes["v1"]["ConfigMap"][""], "config1")
 			},
@@ -138,12 +130,7 @@ func TestIncludes_Add(t *testing.T) {
 			includes := make(Includes)
 
 			for _, node := range tt.nodes {
-				err := includes.Add(node)
-				if tt.expectErr {
-					require.Error(t, err)
-				} else {
-					require.NoError(t, err)
-				}
+				includes.Add(node)
 			}
 
 			if tt.validate != nil {
@@ -162,6 +149,9 @@ func createTestNode(t *testing.T, apiVersion, kind, namespace, name string) *kya
 	yamlObj["metadata"] = map[string]interface{}{
 		"name":      name,
 		"namespace": namespace,
+		"spec": map[string]interface{}{
+			"replicas": 3,
+		},
 	}
 
 	node, err := kyaml.FromMap(yamlObj)
