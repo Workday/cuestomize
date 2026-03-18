@@ -21,6 +21,4 @@ includes:
   name: example-service
   namespace: example-namespace
 remoteModule:
-  registry: ghcr.io
-  repo: workday/cuestomize/cuemodules/cuestomize-examples-simple
-  tag: latest
+  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
