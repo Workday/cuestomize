@@ -20,6 +20,6 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        version: "0.19.10"
+        version: "0.20.1"
         verb: call
         args: renovate --github-token=env://GITHUB_TOKEN

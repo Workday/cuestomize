@@ -17,7 +17,7 @@ jobs:
     - name: Build image
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.19.10"
+        version: "0.20.1"
         verb: call
         args: build --ldflags="-s -w"
 
@@ -32,7 +32,7 @@ jobs:
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.19.10"
+        version: "0.20.1"
         verb: call
         args: test-with-coverage
 
@@ -47,7 +47,7 @@ jobs:
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.19.10"
+        version: "0.20.1"
         verb: call
         args: e-2-e-test
 
@@ -68,6 +68,6 @@ jobs:
         GITHUB_USER: ${{ github.actor }}
         REPOSITORY_PREFIX: ${{ github.repository }}/cuemodules/cuestomize-examples
       with:
-        version: "0.19.10"
+        version: "0.20.1"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --repositoryPrefix="$REPOSITORY_PREFIX"
