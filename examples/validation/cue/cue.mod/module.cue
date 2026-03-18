@@ -1,4 +1,4 @@
-module: "cue.k8s.example"
+module: "validation.cuestomize.dev"
 language: {
-	version: "v0.13.0"
+	version: "v0.14.0"
 }
