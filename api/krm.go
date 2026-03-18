@@ -111,6 +111,10 @@ func ItemMatchReference(item *kyaml.RNode, sel *types.Selector) (bool, error) {
 // findAuthSecret searches items for a Secret that matches the provided selector.
 // It returns the found Secret or an error if no match is found.
 func findAuthSecret(sel *types.Selector, items []*kyaml.RNode) (*corev1.Secret, error) {
+	if sel.Kind == "" {
+		sel.Kind = "Secret"
+	}
+
 	if sel.Kind != "Secret" {
 		return nil, fmt.Errorf(`kind must be Secret, got: "%s"`, sel.Kind)
 	}
