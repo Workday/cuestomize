@@ -3,7 +3,7 @@
 set -e
 
 if [ "$#" -lt 2 ]; then
-  echo "Usage: $0 <path-to-directory> <path-to-api>" "[dir-suffix]"
+  echo "Usage: $0 <path-to-directory> <path-to-api> [dir-suffix]"
   exit 1
 fi
 
