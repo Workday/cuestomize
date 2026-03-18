@@ -4,12 +4,12 @@ apiVersion: "cuestomize.dev/v1alpha1"
 kind:       "Cuestomization"
 
 input: {
-	configMapName: "example-configmap"
+	configMapName: string & =~"^\\w[\\w-]+$"
 }
 
 includes: _
 
-outConfigMap: {
+_configMap: {
 	apiVersion: "v1"
 	kind:       "ConfigMap"
 	metadata: {
@@ -22,6 +22,6 @@ outConfigMap: {
 	}
 }
 
-outputs: [
-	outConfigMap,
-]
+outputs: {
+	cm: _configMap
+}

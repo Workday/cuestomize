@@ -1,34 +1,122 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: example-deployment # change to my-deployment to trigger validation failure
-  namespace: example-namespace
   labels:
-    app: example-app
+    control-plane: controller-manager
+    gatekeeper.sh/operation: webhook
+    gatekeeper.sh/system: "yes"
+  name: gatekeeper-controller-manager
+  namespace: gatekeeper-system
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: example-app # change value to trigger validation failure
+      control-plane: controller-manager
+      gatekeeper.sh/operation: webhook
+      gatekeeper.sh/system: "yes"
   template:
     metadata:
       labels:
-        app: example-app # change value to trigger validation failure
-        # a: b # uncomment to trigger validation failure
+        control-plane: controller-manager
+        gatekeeper.sh/operation: webhook
+        gatekeeper.sh/system: "yes"
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: gatekeeper.sh/operation
+                  operator: In
+                  values:
+                  - webhook
+              topologyKey: kubernetes.io/hostname
+            weight: 100
+      automountServiceAccountToken: true
       containers:
-      - name: main
-        image: example-image:latest
-        ports:
-        - containerPort: 8080
-          name: http
+      - args:
+        - --port=8443
+        - --logtostderr
+        - --exempt-namespace=gatekeeper-system
+        - --operation=webhook
+        - --operation=mutation-webhook
+        - --disable-opa-builtin={http.send}
+        command:
+        - /manager
         env:
-        - name: EXAMPLE_ENV_VAR
-          value: "example-value"
+        - name: POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: CONTAINER_NAME
+          value: manager
+        - name: OTEL_RESOURCE_ATTRIBUTES
+          value: k8s.pod.name=$(POD_NAME),k8s.namespace.name=$(NAMESPACE),k8s.container.name=$(CONTAINER_NAME)
+        image: openpolicyagent/gatekeeper:v3.23.0-beta.0
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 9090
+        name: manager
+        ports:
+        - containerPort: 8443
+          name: webhook-server
+          protocol: TCP
+        - containerPort: 8888
+          name: metrics
+          protocol: TCP
+        - containerPort: 9090
+          name: healthz
+          protocol: TCP
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 9090
         resources:
-          requests:
-            memory: "128Mi"
-            cpu: "500m"
           limits:
-            memory: "256Mi"
             cpu: "1"
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        securityContext:
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          readOnlyRootFilesystem: true
+          runAsGroup: 999
+          runAsNonRoot: true
+          runAsUser: 1000
+          seccompProfile:
+            type: RuntimeDefault
+        volumeMounts:
+        - mountPath: /certs
+          name: cert
+          readOnly: true
+      nodeSelector:
+        kubernetes.io/os: linux
+      priorityClassName: system-cluster-critical
+      serviceAccountName: gatekeeper-admin
+      terminationGracePeriodSeconds: 60
+      volumes:
+      - name: cert
+        secret:
+          defaultMode: 420
+          secretName: gatekeeper-webhook-server-cert

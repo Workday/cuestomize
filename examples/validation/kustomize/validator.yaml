@@ -9,12 +9,11 @@ metadata:
         image: ghcr.io/workday/cuestomize:latest
         network: true
 includes:
-# all deployments in the example-namespace namespace
+- group: ""
+  version: v1
 - group: apps
   version: v1
-  kind: Deployment
-  namespace: example-namespace
+- group: batch
+  version: v1
 remoteModule:
-  registry: ghcr.io
-  repo: workday/cuestomize/cuemodules/cuestomize-examples-validation
-  tag: latest
+  ref: github.com/workday/cuestomize/cuemodules/cuestomize-examples-validation:latest

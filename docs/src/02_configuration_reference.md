@@ -78,6 +78,7 @@ The allowed shape and values for the `input` are entirely dependent on the CUE m
 For example, if the CUE model defines the input as:
 
 ```cue
+# Input schema defined in the CUE model (each model defines their own)
 input: {
     name: string
     replicas: int | *1
@@ -118,23 +119,28 @@ The `includes` field is a list of resource selectors, and resources matching one
 
 ### Remote Module
 
-| Field       | Type   | Description                                                       |
-| ----------- | ------ | ----------------------------------------------------------------- |
-| `auth`      | object | (Optional) Resource selector for secret containing credentials    |
-| `ref`       | string | The full OCI reference in the format `registry/repo:tag`          |
-| `registry`  | string | (Deprecated) The OCI registry host (e.g., `ghcr.io`, `docker.io`) |
-| `repo`      | string | (Deprecated) The repository path to your CUE module               |
-| `tag`       | string | (Deprecated) The tag/version to pull                              |
-| `plainHTTP` | bool   | (Optional) Whether to use plain HTTP instead of HTTPS             |
+| Field        | Type     | Description                                                           |
+| ------------ | -------- | --------------------------------------------------------------------- |
+| `auth`       | object   | _(Optional)_ Resource selector for secret containing credentials      |
+| `ref`        | string   | The full OCI reference in the format `registry/repo:tag`              |
+| ~`registry`~ | ~string~ | _(Deprecated)_ ~The OCI registry host (e.g., `ghcr.io`, `docker.io`)~ |
+| ~`repo`~     | ~string~ | _(Deprecated)_ ~The repository path to your CUE module~               |
+| ~`tag`~      | ~string~ | _(Deprecated)_ ~The tag/version to pull~                              |
+| `plainHTTP`  | bool     | _(Optional)_ Whether to use plain HTTP instead of HTTPS               |
 
-### Auth
+#### Auth
 
-TODO: add description
+| Field                | Type   | Description                                                                                                |
+| -------------------- | ------ | ---------------------------------------------------------------------------------------------------------- |
+| `kind`               | string | _(Optional)_ Must be unspecified or `Secret`                                                               |
+| `name`               | string | _(Optional)_ Name of the resource containing the credentials                                               |
+| `namespace`          | string | _(Optional)_ Namespace of the resource containing the credentials (defaults to the KRM function namespace) |
+| `annotationSelector` | string | _(Optional)_ Annotation selector to filter the resources                                                   |
+| `labelSelector`      | string | _(Optional)_ Label selector to filter the resources                                                        |
 
-| Field | Type | Description |
-| ----- | ---- | ----------- |
+At least one of the fields must be specified to match an auth secret in the kustomize input stream.
 
-TODO: fill this table when we support auth secrets
+If multiple secrets match the provided selector, one will be chosen – with no guarantee provided on which one.
 
 ### Example
 
@@ -149,7 +155,7 @@ metadata:
         image: ghcr.io/workday/cuestomize:latest
         network: true
 remoteModule:
-  ref: docker.io/wackoninja/cuemodules:latest
+  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
 includes:
   - version: "v1"
     kind: ConfigMap
