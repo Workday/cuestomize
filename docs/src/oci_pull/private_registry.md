@@ -69,6 +69,54 @@ The full list of supported fields is the following:
 
 ### Environment Variables (Discouraged)
 
-This method of passing credentials is discouraged and may be removed in future kustomize versions, but is documented here for completeness, and because it may be useful when developing to quickly iterate.
+> This method of passing credentials is discouraged and may be removed in future kustomize versions, but is documented here for completeness, and because it may be useful when developing to quickly iterate.
 
-TODO: document
+Kustomize lets you pass environment variables to KRM functions, and Cuestomize supports passing the registry credentials through the same environment variables it would expect in the Secret structure.
+
+An example on how to pass the credentials through environment variables:
+
+```yaml
+apiVersion: cuestomize.dev/v1alpha1
+kind: Cuestomization
+metadata:
+  name: example
+  annotations:
+    config.kubernetes.io/local-config: "true"
+    config.kubernetes.io/function: |
+      container:
+        image: ghcr.io/workday/cuestomize:latest
+        network: true
+        envs: [REGISTRY_USERNAME, REGISTRY_PASSWORD]
+```
+
+In this case, you would need to set the `REGISTRY_USERNAME` and `REGISTRY_PASSWORD` environment variables in your shell before running `kustomize build`:
+
+```bash
+export REGISTRY_USERNAME=<username>
+export REGISTRY_PASSWORD=<password>
+kustomize build .
+```
+
+This allows you not to have the credentials stored in any Kubernetes Secret, and avoid having to include them in the kustomize function configuration.
+
+Another way, even more discouraged, is to hardcode the credentials directly in the configuration:
+
+```yaml
+apiVersion: cuestomize.dev/v1alpha1
+kind: Cuestomization
+metadata:
+  name: example
+  annotations:
+    config.kubernetes.io/local-config: "true"
+    config.kubernetes.io/function: |
+      container:
+        image: ghcr.io/workday/cuestomize:latest
+        network: true
+        envs:
+        - REGISTRY_USERNAME="<username>"
+        - REGISTRY_PASSWORD="<password>"
+```
+
+This is not recommended at all, as it exposes the credentials in plain text in your configuration files, which may be committed to version control or shared with others.
+
+Please avoid using this method as much as possible, and prefer the Secret passing method described above.
