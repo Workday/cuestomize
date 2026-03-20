@@ -4,7 +4,9 @@ import (
 	v "validation.cuestomize.dev/pkg/validations"
 )
 
-input: _
+#Input: {} | null
+
+input: #Input
 
 includes: {
 	"apps/v1": {

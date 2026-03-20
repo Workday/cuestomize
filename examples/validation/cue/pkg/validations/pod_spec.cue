@@ -2,8 +2,6 @@ package validations
 
 import (
 	api "k8s.io/api/core/v1"
-	apps "k8s.io/api/apps/v1"
-	batch "k8s.io/api/batch/v1"
 )
 
 #STIGPodSpec: api.#PodSpec & {

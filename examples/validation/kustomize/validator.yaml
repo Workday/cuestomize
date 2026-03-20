@@ -16,4 +16,4 @@ includes:
 - group: batch
   version: v1
 remoteModule:
-  ref: github.com/workday/cuestomize/cuemodules/cuestomize-examples-validation:latest
+  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-validation:latest
