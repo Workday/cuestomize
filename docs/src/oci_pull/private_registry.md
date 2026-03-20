@@ -81,7 +81,6 @@ kind: Cuestomization
 metadata:
   name: example
   annotations:
-    config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
         image: ghcr.io/workday/cuestomize:latest
@@ -107,7 +106,6 @@ kind: Cuestomization
 metadata:
   name: example
   annotations:
-    config.kubernetes.io/local-config: "true"
     config.kubernetes.io/function: |
       container:
         image: ghcr.io/workday/cuestomize:latest

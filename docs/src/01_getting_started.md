@@ -52,30 +52,7 @@ Edit the `krm-func.yaml` file to configure the KRM function that will run Cuesto
 Here is an example configuration:
 
 ```yaml
-apiVersion: cuestomize.dev/v1alpha1
-kind: Cuestomization
-metadata:
-  name: example
-  annotations:
-    config.kubernetes.io/local-config: "true"
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
-input:
-  configMapName: example-configmap
-includes:
-  - group: apps
-    version: v1
-    kind: Deployment
-    name: example-deployment
-    namespace: example-namespace
-  - version: v1
-    kind: Service
-    name: example-service
-    namespace: example-namespace
-remoteModule:
-  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
+{{#include ../../examples/simple/kustomize/krm-func.yaml}}
 ```
 
 > **Note:** Cuestomize does not constrain the `apiVersion` and `kind` fields of the KRM function configuration,
