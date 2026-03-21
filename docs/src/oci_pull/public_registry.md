@@ -6,20 +6,7 @@ To pull from a public registry, you just need to configure the function on where
 You can do this by specifying a `remoteModule` field in your Cuestomization resource, like so:
 
 ```yaml
-apiVersion: cuestomize.dev/v1alpha1
-kind: Cuestomization
-metadata:
-  name: example
-  annotations:
-    config.kubernetes.io/local-config: "true"
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
-input:
-  configMapName: example-configmap
-remoteModule:
-  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
+{{#include ../../examples/simple/kustomize/krm-func.yaml}}
 ```
 
 In this example, we are pulling the `ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple` module at the `latest` tag.

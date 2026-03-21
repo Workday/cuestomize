@@ -145,20 +145,5 @@ If multiple secrets match the provided selector, one will be chosen – with no
 ### Example
 
 ```yaml
-apiVersion: cuestomize.io/v1
-kind: CuestomizeConfig
-metadata:
-  name: my-config
-  annotations:
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
-remoteModule:
-  ref: ghcr.io/workday/cuestomize/cuemodules/cuestomize-examples-simple:latest
-includes:
-  - version: "v1"
-    kind: ConfigMap
-    name: "test-configmap"
-    namespace: "test-namespace"
+{{#include ../../examples/simple/kustomize/krm-func.yaml}}
 ```

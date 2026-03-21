@@ -1,5 +1,6 @@
 resources:
 - deployment.yaml
+# - invalid_deployment.yaml # uncomment to trigger validation error
 
 transformers:
 - validator.yaml

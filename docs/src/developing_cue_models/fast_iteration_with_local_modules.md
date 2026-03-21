@@ -22,8 +22,11 @@ In this structure, the `cue` directory contains your CUE module files, while the
 Create a `kustomization.yaml` file with the following content:
 
 ```yaml
-resources:
-  - krm-config.yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources: [] # your resources here
+
 transformers:
   - krm-config.yaml
 ```

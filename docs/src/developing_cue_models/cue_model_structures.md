@@ -18,6 +18,11 @@ apiVersion: cuestomize.dev/v1alpha1
 kind: Cuestomization
 metadata:
   name: example
+  annotations:
+    config.kubernetes.io/function: |
+      container:
+        image: ghcr.io/workday/cuestomize:latest
+        network: true
 input:
   name: example
   annotations:

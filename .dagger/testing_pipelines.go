@@ -21,7 +21,7 @@ func (m *Cuestomize) UnitTest(
 ) error {
 
 	// Create a container to run the unit tests
-	container := repoBaseContainer(buildContext, nil).
+	container := m.GoGenerate(ctx, buildContext).
 		WithExec([]string{"go", "test", "./..."})
 
 	exitCode, err := container.ExitCode(ctx)
@@ -66,8 +66,8 @@ func (m *Cuestomize) E2E_Test(
 	defer registryWithAuthService.Stop(ctx)
 
 	// e2e setup (pushing cue module to registries)
-	if _, err := testContainerWithRegistryServices(
-		buildContext, registryService, registryWithAuthService, username, password).
+	if _, err := m.testContainerWithRegistryServices(
+		ctx, buildContext, registryService, registryWithAuthService, username, password).
 		WithExec([]string{"go", "run", "./e2e/main.go"}).Sync(ctx); err != nil {
 		return fmt.Errorf("failed to run e2e tests: %w", err)
 	}
@@ -153,8 +153,8 @@ func (m *Cuestomize) TestWithCoverage(
 	defer registryWithAuthService.Stop(ctx)
 
 	// Create a container to run the integration tests
-	container := testContainerWithRegistryServices(
-		buildContext, registryService, registryWithAuthService, username, password).
+	container := m.testContainerWithRegistryServices(
+		ctx, buildContext, registryService, registryWithAuthService, username, password).
 		WithEnvVariable(common.IntegrationTestingVarName, "true").
 		WithExec([]string{"go", "test", "./...", "-coverprofile=coverage.out"})
 
@@ -180,9 +180,9 @@ func setupRegistryServiceWithAuth(ctx context.Context, username, password string
 	return registryWithAuth.AsService().Start(ctx)
 }
 
-// testContainerWithRegistryServices returns a repoBaseContainer with registry and registry_auth services bound.
-func testContainerWithRegistryServices(buildContext *dagger.Directory, registryService, registryWithAuthService *dagger.Service, username, password string) *dagger.Container {
-	return repoBaseContainer(buildContext, nil).
+// testContainerWithRegistryServices returns a container with registry and registry_auth services bound.
+func (m *Cuestomize) testContainerWithRegistryServices(ctx context.Context, buildContext *dagger.Directory, registryService, registryWithAuthService *dagger.Service, username, password string) *dagger.Container {
+	return m.GoGenerate(ctx, buildContext).
 		WithServiceBinding("registry", registryService).
 		WithServiceBinding("registry_auth", registryWithAuthService).
 		WithEnvVariable(common.RegistryHostVarName, "registry:5000").
