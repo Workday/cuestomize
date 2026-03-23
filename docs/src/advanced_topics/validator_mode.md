@@ -23,10 +23,10 @@ metadata:
   name: example
   annotations:
     config.cuestomize.io/validator: "true"
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
+~    config.kubernetes.io/function: |
+~      container:
+~        image: ghcr.io/workday/cuestomize:latest
+~        network: true
 includes:
   - group: ""
     version: v1
