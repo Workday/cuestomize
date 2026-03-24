@@ -31,9 +31,9 @@ func (m *Cuestomize) Build(
 	if platform != "" {
 		containerOpts.Platform = dagger.Platform(platform)
 	}
-	builder := cuestomizeBuilderContainer(buildContext, ldflags, containerOpts)
-
 	ldflags = fmt.Sprintf("-X 'main.Version=%s' %s", version, ldflags)
+
+	builder := cuestomizeBuilderContainer(buildContext, ldflags, containerOpts)
 
 	commit, err := git.Head().Commit(ctx)
 	if err != nil {
