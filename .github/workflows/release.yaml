@@ -13,24 +13,23 @@ jobs:
       TAG: ${{ github.event.release.tag_name }}
 
     outputs:
-      tag_name: ${{ steps.generate-tag-name.outputs.tag }}
+      version: ${{ steps.get-version.outputs.version }}
       latest: ${{ steps.set-latest.outputs.latest }}
 
     steps:
-    - name: Tag Follows SemVer
+    - name: Version Follows SemVer
       run: |
-        if [[ ! "${TAG}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-(alpha|rc)\.[0-9]+)?$ ]]; then
-          echo "Invalid SemVer tag: ${TAG}" >&2
+        if [[ ! "${TAG}" =~ ^v?[0-9]+\.[0-9]+\.[0-9]+(-[\w.]+)?$ ]]; then
+          echo "Invalid SemVer: ${TAG}" >&2
           exit 1
         fi
 
-    - name: Generate Tag Name
-      id: generate-tag-name
+    - name: Get Version
+      id: get-version
       run: |
-        # remove v prefix
-        IMAGE_TAG=${TAG#v}
+        VERSION=${TAG}
 
-        echo -n "tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+        echo -n "version=${VERSION}" >> $GITHUB_OUTPUT
 
     # only tag as latest if the release is set to latest
     - name: set tag as latest
@@ -58,13 +57,14 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
-        TAG: ${{ needs.prep.outputs.tag_name }}
+        VERSION: ${{ needs.prep.outputs.version }}
         LATEST: ${{ needs.prep.outputs.latest }}
         REPOSITORY: workday/cuestomize
+        PLATFORMS: linux/amd64,linux/arm64
       with:
-        version: "0.20.1"
+        version: "0.20.3"
         verb: call
-        args: build-and-publish --repository="$REPOSITORY" --tag="$TAG" --also-tag-as-latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
+        args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
 
   publish-examples:
     name: Publish Examples
@@ -83,9 +83,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GITHUB_USER: ${{ github.actor }}
         REPOSITORY_PREFIX: ${{ github.repository }}/cuemodules/cuestomize-examples
-        TAG: ${{ needs.prep.outputs.tag_name }}
+        VERSION: ${{ needs.prep.outputs.version }}
         LATEST: ${{ needs.prep.outputs.latest }}
       with:
-        version: "0.20.1"
+        version: "0.20.3"
         verb: call
-        args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --tag="$TAG" --latest="$LATEST" --repositoryPrefix="$REPOSITORY_PREFIX"
+        args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --version="$VERSION" --latest="$LATEST" --repositoryPrefix="$REPOSITORY_PREFIX"

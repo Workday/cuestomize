@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-// GoGenerate runs go generate inside the provided build context.
+// Runs go generate inside the provided build context.
 func (m *Cuestomize) GoGenerate(
 	ctx context.Context,
 	// +defaultPath=./

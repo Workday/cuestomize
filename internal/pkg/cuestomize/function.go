@@ -2,6 +2,7 @@ package cuestomize
 
 import (
 	"context"
+	"os"
 
 	"github.com/Workday/cuestomize/api"
 	"github.com/Workday/cuestomize/pkg/cuerrors"
@@ -36,6 +37,11 @@ func newCuestomizeFunctionWithPath(ctx context.Context, config *api.KRMInput, re
 			provider = ociProvider
 		} else {
 			provider = model.NewLocalPathProvider(*resourcesPath)
+		}
+
+		err := os.MkdirAll(*resourcesPath, 0o750)
+		if err != nil {
+			return nil, err
 		}
 
 		return cuestomize.Cuestomize(ctx, items, config, cuestomize.WithModelProvider(provider))

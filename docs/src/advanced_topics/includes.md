@@ -24,11 +24,11 @@ apiVersion: cuestomize.dev/v1alpha1
 kind: Cuestomization
 metadata:
   name: example
-  annotations:
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
+~  annotations:
+~    config.kubernetes.io/function: |
+~      container:
+~        image: ghcr.io/workday/cuestomize:latest
+~        network: true
 input:
   configMapName: my-config
 includes:
@@ -119,10 +119,11 @@ apiVersion: cuestomize.dev/v1alpha1
 kind: NginxDeployment
 metadata:
   name: nginx-deployment
-  annotations:
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
+~  annotations:
+~    config.kubernetes.io/function: |
+~      container:
+~        image: ghcr.io/workday/cuestomize:latest
+~        network: true
 input:
   deploymentName: nginx-deployment
   image: nginx:latest
@@ -260,10 +261,10 @@ metadata:
   name: deployment-validator
   annotations:
     config.cuestomize.io/validator: "true"
-    config.kubernetes.io/function: |
-      container:
-        image: ghcr.io/workday/cuestomize:latest
-        network: true
+~    config.kubernetes.io/function: |
+~      container:
+~        image: ghcr.io/workday/cuestomize:latest
+~        network: true
 includes:
   - group: apps
     version: v1

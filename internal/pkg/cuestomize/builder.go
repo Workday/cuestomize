@@ -13,7 +13,7 @@ import (
 
 const (
 	// DefaultResourcesPath is the default path to the directory containing the CUE resources.
-	DefaultResourcesPath = "/cue-resources"
+	DefaultResourcesPath = "/tmp/cue-resources"
 )
 
 // KRMFuncBuilder is a builder for the Cuestomize KRM function.

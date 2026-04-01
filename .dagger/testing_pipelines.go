@@ -19,8 +19,6 @@ func (m *Cuestomize) UnitTest(
 	// +defaultPath=./
 	buildContext *dagger.Directory,
 ) error {
-
-	// Create a container to run the unit tests
 	container := m.GoGenerate(ctx, buildContext).
 		WithExec([]string{"go", "test", "./..."})
 
@@ -38,10 +36,11 @@ func (m *Cuestomize) E2E_Test(
 	ctx context.Context,
 	// +defaultPath=./
 	buildContext *dagger.Directory,
-	// sock *dagger.Socket,
+	// +defaultPath="./.git"
+	git *dagger.GitRepository,
 ) error {
 	// build cuestomize
-	cuestomize := m.Build(ctx, buildContext, "", "")
+	cuestomize := m.Build(ctx, buildContext, git, "", "", "nightly")
 
 	cuestomizeBinary := cuestomize.File("/usr/local/bin/cuestomize")
 
@@ -92,7 +91,7 @@ func (m *Cuestomize) E2E_Test(
 	defer dindService.Stop(ctx)
 
 	dockerCli := dag.Container().From("docker:cli")
-	// Load the image into DIND and tag it
+	// load image into DIND and tag it
 	_, err = dockerCli.
 		WithServiceBinding("docker-host", dindService).
 		WithEnvVariable("DOCKER_HOST", "tcp://docker-host:2375").
@@ -136,14 +135,12 @@ func (m *Cuestomize) TestWithCoverage(
 	// +defaultPath=./
 	buildContext *dagger.Directory,
 ) (*dagger.File, error) {
-	// Setup registryNoAuth without authentication
 	registryService, err := setupRegistryServiceNoAuth(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to start registry service: %w", err)
 	}
 	defer registryService.Stop(ctx)
 
-	// Setup registryWithAuth with authentication
 	username := "registryuser"
 	password := "password"
 	registryWithAuthService, err := setupRegistryServiceWithAuth(ctx, username, password)
@@ -152,7 +149,6 @@ func (m *Cuestomize) TestWithCoverage(
 	}
 	defer registryWithAuthService.Stop(ctx)
 
-	// Create a container to run the integration tests
 	container := m.testContainerWithRegistryServices(
 		ctx, buildContext, registryService, registryWithAuthService, username, password).
 		WithEnvVariable(common.IntegrationTestingVarName, "true").

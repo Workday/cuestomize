@@ -3,3 +3,6 @@ authors = ["The Cuestomize Maintainers"]
 language = "en"
 src = "src"
 title = "The Cuestomize Book"
+
+[output.html.code.hidelines]
+yaml = "~"

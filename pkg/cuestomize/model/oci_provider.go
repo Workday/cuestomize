@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/Workday/cuestomize/api"
+	"github.com/Workday/cuestomize/internal/pkg/files"
 	"github.com/Workday/cuestomize/pkg/oci/fetcher"
 	"github.com/go-logr/logr"
 	"oras.land/oras-go/v2/registry"
@@ -148,6 +149,35 @@ func (p *OCIModelProvider) Get(ctx context.Context) error {
 	)
 	if err != nil {
 		return fmt.Errorf("failed to fetch from OCI registry: %w", err)
+	}
+
+	// check if we pulled a compressed tarball and if so, attempt to decompress it in place
+	// this is a best effort attempt to support both plain directories and compressed tarballs as OCI artifacts
+	// without requiring users to specify the format of the artifact in the configuration
+	entries, err := os.ReadDir(p.workingDir)
+	if err != nil {
+		return fmt.Errorf("failed to read working directory: %w", err)
+	}
+
+	log.Info("fetched CUE model from OCI registry", "entries", func() []string {
+		names := make([]string, len(entries))
+		for i, entry := range entries {
+			names[i] = entry.Name()
+		}
+		return names
+	}())
+
+	if len(entries) == 1 && !entries[0].IsDir() && files.IsArchive(entries[0].Name()) {
+		archivePath := filepath.Join(p.workingDir, entries[0].Name())
+		wdir, err := filepath.Abs(p.workingDir)
+		if err != nil {
+			return fmt.Errorf("failed to get absolute path of working directory: %w", err)
+		}
+		log.Info("detected archive, attempting to decompress", "archive", archivePath)
+		err = files.Untar(archivePath, wdir, files.RemoveArchive(true))
+		if err != nil {
+			return fmt.Errorf("failed to decompress archive: %w", err)
+		}
 	}
 
 	// best-effort validation of module structure
