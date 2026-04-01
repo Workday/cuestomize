@@ -27,13 +27,7 @@ func (m *Cuestomize) Build(
 	// +default="nightly"
 	version string,
 ) *dagger.Container {
-	containerOpts := dagger.ContainerOpts{}
-	if platform != "" {
-		containerOpts.Platform = dagger.Platform(platform)
-	}
 	ldflags = fmt.Sprintf("-X 'main.Version=%s' %s", version, ldflags)
-
-	builder := cuestomizeBuilderContainer(buildContext, ldflags, containerOpts)
 
 	commit, err := git.Head().Commit(ctx)
 	if err != nil {
@@ -41,6 +35,10 @@ func (m *Cuestomize) Build(
 	}
 
 	container := buildContext.DockerBuild(dagger.DirectoryDockerBuildOpts{
+		Platform: dagger.Platform(platform),
+		BuildArgs: []dagger.BuildArg{
+			{Name: "LDFLAGS", Value: ldflags},
+		},
 		Dockerfile: "Containerfile",
 	})
 
