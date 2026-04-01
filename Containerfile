@@ -1,8 +1,8 @@
 FROM golang:1.26 AS builder
 
-ARG GOOS=linux
+ARG GOOS
 ARG LDFLAGS
-ARG GOARCH=amd64
+ARG GOARCH
 
 WORKDIR /workspace
 
