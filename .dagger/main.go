@@ -24,17 +24,3 @@ func repoBaseContainer(buildContext *dagger.Directory, dirOpts *dagger.Container
 		WithExec([]string{"go", "mod", "download"}).
 		WithDirectory("/workspace", buildContext, *dirOpts)
 }
-
-// cuestomizeBuilderContainer returns a container that can be used to build the cuestomize binary.
-func cuestomizeBuilderContainer(buildContext *dagger.Directory, ldflags string, containerOpts ...dagger.ContainerOpts) *dagger.Container {
-	buildCmd := []string{"go", "build", "-o", "cuestomize"}
-	if ldflags != "" {
-		buildCmd = append(buildCmd, "-ldflags", ldflags)
-	}
-	buildCmd = append(buildCmd, "main.go")
-
-	return repoBaseContainer(buildContext, nil, containerOpts...).
-		WithEnvVariable("CGO_ENABLED", "0").
-		WithEnvVariable("GO111MODULE", "on").
-		WithExec(buildCmd)
-}
