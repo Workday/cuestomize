@@ -12,10 +12,12 @@ import (
 	"strings"
 )
 
+// IsArchive returns true if the provided path has a .tar, .tar.gz, or .tgz extension.
 func IsArchive(path string) bool {
 	return strings.HasSuffix(path, ".tar") || strings.HasSuffix(path, ".tar.gz") || strings.HasSuffix(path, ".tgz")
 }
 
+// Option defines a functional option for configuring the Untar function.
 type Option func(*untarOptions)
 
 // RemoveArchive is an option that configures whether to remove the archive file after extraction.
@@ -30,6 +32,7 @@ type untarOptions struct {
 	removeArchive bool
 }
 
+// Untar extracts the contents of a tar or tar.gz archive to the specified destination directory.
 func Untar(path string, dest string, options ...Option) error {
 	if !filepath.IsAbs(dest) {
 		return fmt.Errorf("destination path must be absolute: %s", dest)
@@ -81,6 +84,8 @@ func untgz(r io.Reader, dest string, opts untarOptions) error {
 func untar(r io.Reader, dest string, _ untarOptions) error {
 	tr := tar.NewReader(r)
 
+	dest = filepath.Clean(dest)
+
 L:
 	for {
 		header, err := tr.Next()
@@ -97,7 +102,11 @@ L:
 			continue L
 		}
 
-		target := filepath.Join(dest, header.Name)
+		target, err := sanitizeArchivePath(dest, header.Name)
+		if err != nil {
+			return err
+		}
+
 		switch header.Typeflag {
 		case tar.TypeDir:
 			if _, err := os.Stat(target); err != nil {
@@ -106,7 +115,7 @@ L:
 				}
 			}
 		case tar.TypeReg:
-			err := os.MkdirAll(filepath.Dir(target), 0o755)
+			err := os.MkdirAll(filepath.Dir(target), 0o750)
 			if err != nil {
 				return fmt.Errorf("failed to create directory for file '%s': %w", target, err)
 			}
@@ -120,7 +129,7 @@ L:
 }
 
 func writeFile(target string, mode os.FileMode, r io.Reader) error {
-	err := os.MkdirAll(filepath.Dir(target), 0o755)
+	err := os.MkdirAll(filepath.Dir(target), 0o750)
 	if err != nil {
 		return fmt.Errorf("failed to create directory for file '%s': %w", target, err)
 	}
@@ -143,4 +152,12 @@ func writeFile(target string, mode os.FileMode, r io.Reader) error {
 
 func isGzip(path string) bool {
 	return strings.HasSuffix(path, ".gz") || strings.HasSuffix(path, ".tgz")
+}
+
+func sanitizeArchivePath(d, t string) (string, error) {
+	target := filepath.Join(d, t)
+	if !strings.HasPrefix(target, d+string(os.PathSeparator)) {
+		return "", fmt.Errorf("%s: illegal file path", t)
+	}
+	return target, nil
 }
