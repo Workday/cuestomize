@@ -1,23 +1,26 @@
-from golang:1.25 as builder
+FROM golang:1.26 AS builder
 
-workdir /workspace
+ARG GOOS=linux
+ARG LDFLAGS
+ARG GOARCH=amd64
 
-add go.mod go.mod
-add go.sum go.sum
+WORKDIR /workspace
 
-run go mod download
+ADD go.mod go.mod
+ADD go.sum go.sum
 
-add internal/ internal/
-add api/ api/
-add pkg/ pkg/
-add main.go main.go
+RUN go mod download
 
-add semver semver
+ADD internal/ internal/
+ADD api/ api/
+ADD pkg/ pkg/
+ADD main.go main.go
 
-run CGO_ENABLED=0 go build -o cuestomize main.go
+RUN CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "$LDFLAGS" -o cuestomize main.go
 
-from gcr.io/distroless/static:latest 
 
-copy --from=builder /workspace/cuestomize /usr/local/bin/cuestomize
+FROM gcr.io/distroless/static:latest
 
-entrypoint ["/usr/local/bin/cuestomize"]
+COPY --from=builder /workspace/cuestomize /usr/local/bin/cuestomize
+
+ENTRYPOINT ["/usr/local/bin/cuestomize"]
