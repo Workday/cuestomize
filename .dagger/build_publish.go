@@ -109,6 +109,8 @@ func (m *Cuestomize) BuildAndPublish(
 }
 
 func versionToTags(version string) []string {
+	version = strings.TrimPrefix(version, "v")
+
 	tags := []string{version}
 
 	matches := semVerRegexp.FindStringSubmatch(version)
