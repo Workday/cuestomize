@@ -10,8 +10,6 @@ import (
 )
 
 func TestUntar(t *testing.T) {
-	t.Parallel()
-
 	tests := []struct {
 		name         string
 		archiveName  string
