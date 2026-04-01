@@ -60,10 +60,11 @@ jobs:
         VERSION: ${{ needs.prep.outputs.version }}
         LATEST: ${{ needs.prep.outputs.latest }}
         REPOSITORY: workday/cuestomize
+        PLATFORMS: linux/amd64,linux/arm64
       with:
         version: "0.20.3"
         verb: call
-        args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms=linux/amd64,linux/arm64
+        args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
 
   publish-examples:
     name: Publish Examples
