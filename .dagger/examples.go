@@ -20,8 +20,8 @@ func (m *Cuestomize) PublishExamples(
 	registry string,
 	// +default="workday/cuestomize/cuemodules/cuestomize-examples"
 	repositoryPrefix string,
-	// +default="latest"
-	tag string,
+	// +default="nightly"
+	version string,
 	// +optional
 	latest bool,
 	// +default="info"
@@ -40,7 +40,7 @@ func (m *Cuestomize) PublishExamples(
 		WithEnvVariable("IS_LATEST", latestStr).
 		WithEnvVariable("OCI_USERNAME", username).
 		WithSecretVariable("OCI_PASSWORD", password).
-		WithExec([]string{"go", "run", "hack/push-examples.go", tag}, dagger.ContainerWithExecOpts{
+		WithExec([]string{"go", "run", "hack/push-examples.go", version}, dagger.ContainerWithExecOpts{
 			RedirectStderr: "stderr.log",
 		})
 
