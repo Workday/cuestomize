@@ -4,6 +4,10 @@ on:
   release:
     types: [ published, prereleased ]
 
+concurrency:
+  group: release
+  cancel-in-progress: true
+
 jobs:
   prep:
     name: Prepare
