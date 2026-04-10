@@ -26,14 +26,8 @@ func (m *Cuestomize) Build(
 	ldflags string,
 	// +default="nightly"
 	version string,
-	// +default=false
-	duplicateBuildContext bool,
 ) *dagger.Container {
 	ldflags = fmt.Sprintf("-X 'main.Version=%s' %s", version, ldflags)
-
-	if duplicateBuildContext {
-		buildContext = dag.Directory().WithDirectory(".", buildContext)
-	}
 
 	git := FromDirectory(buildContext)
 
@@ -107,7 +101,7 @@ func (m *Cuestomize) BuildAndPublish(
 
 	platformVariants := make([]*dagger.Container, 0, len(platforms))
 	for _, platform := range platforms {
-		container := m.Build(ctx, buildContext, ref, platform, ldflags, version, true)
+		container := m.Build(ctx, buildContext, ref, platform, ldflags, version)
 		if container == nil {
 			return fmt.Errorf("failed to build container for platform %s", platform)
 		}

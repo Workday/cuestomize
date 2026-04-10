@@ -40,7 +40,7 @@ func (m *Cuestomize) E2E_Test(
 	git *dagger.GitRepository,
 ) error {
 	// build cuestomize
-	cuestomize := m.Build(ctx, buildContext, "", "", "", "nightly", false)
+	cuestomize := m.Build(ctx, buildContext, "", "", "", "nightly")
 
 	cuestomizeBinary := cuestomize.File("/usr/local/bin/cuestomize")
 
