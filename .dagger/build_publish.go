@@ -26,8 +26,14 @@ func (m *Cuestomize) Build(
 	ldflags string,
 	// +default="nightly"
 	version string,
+	// +default=false
+	duplicateBuildContext bool,
 ) *dagger.Container {
 	ldflags = fmt.Sprintf("-X 'main.Version=%s' %s", version, ldflags)
+
+	if duplicateBuildContext {
+		buildContext = dag.Directory().WithDirectory(".", buildContext)
+	}
 
 	git := FromDirectory(buildContext)
 
@@ -35,10 +41,9 @@ func (m *Cuestomize) Build(
 	defer sp.End()
 
 	if ref != "" {
-		if err := git.Checkout(ctx, ref); err != nil {
-			sp.RecordError(fmt.Errorf("failed to checkout git ref %s: %w", ref, err))
-			return nil
-		}
+		git.Stash(ctx)
+
+		git.Checkout(ctx, ref)
 
 		buildContext = git.Directory()
 	}
@@ -102,7 +107,7 @@ func (m *Cuestomize) BuildAndPublish(
 
 	platformVariants := make([]*dagger.Container, 0, len(platforms))
 	for _, platform := range platforms {
-		container := m.Build(ctx, buildContext, ref, platform, ldflags, version)
+		container := m.Build(ctx, buildContext, ref, platform, ldflags, version, true)
 		if container == nil {
 			return fmt.Errorf("failed to build container for platform %s", platform)
 		}
