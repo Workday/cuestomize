@@ -18,8 +18,8 @@ func (m *Cuestomize) Build(
 	ctx context.Context,
 	// +defaultPath=./
 	buildContext *dagger.Directory,
-	// +defaultPath="./.git"
-	git *dagger.GitRepository,
+	// +optional
+	ref string,
 	// +default=""
 	platform string,
 	// +default=""
@@ -29,9 +29,24 @@ func (m *Cuestomize) Build(
 ) *dagger.Container {
 	ldflags = fmt.Sprintf("-X 'main.Version=%s' %s", version, ldflags)
 
+	git := FromDirectory(buildContext)
+
+	ctx, sp := Tracer().Start(ctx, "building Cuestomize image")
+	defer sp.End()
+
+	if ref != "" {
+		if err := git.Checkout(ctx, ref); err != nil {
+			sp.RecordError(fmt.Errorf("failed to checkout git ref %s: %w", ref, err))
+			return nil
+		}
+
+		buildContext = git.Directory()
+	}
+
 	commit, err := git.Head().Commit(ctx)
 	if err != nil {
-		panic("failed to get git commit: " + err.Error())
+		sp.RecordError(fmt.Errorf("failed to get git commit: %w", err))
+		return nil
 	}
 
 	container := buildContext.DockerBuild(dagger.DirectoryDockerBuildOpts{
@@ -63,8 +78,8 @@ func (m *Cuestomize) BuildAndPublish(
 	password *dagger.Secret,
 	// +defaultPath=./
 	buildContext *dagger.Directory,
-	// +defaultPath="./.git"
-	git *dagger.GitRepository,
+	// +optional
+	ref string,
 	// +default="ghcr.io"
 	registry string,
 	repository string,
@@ -87,7 +102,10 @@ func (m *Cuestomize) BuildAndPublish(
 
 	platformVariants := make([]*dagger.Container, 0, len(platforms))
 	for _, platform := range platforms {
-		container := m.Build(ctx, buildContext, git, string(platform), ldflags, version)
+		container := m.Build(ctx, buildContext, ref, platform, ldflags, version)
+		if container == nil {
+			return fmt.Errorf("failed to build container for platform %s", platform)
+		}
 		platformVariants = append(platformVariants, container)
 	}
 
