@@ -79,7 +79,5 @@ func Cuestomize(ctx context.Context, items []*kyaml.RNode, config *api.KRMInput,
 		log.V(4).Info("cuestomize is acting in validator mode.")
 		return items, nil // if the function is a validator, return the original items without processing
 	}
-	return ProcessOutputs(ctx, unified, items, OutputOptions{
-		AllowEdit: AllowEditResourcesInStream(config),
-	})
+	return ProcessOutputs(ctx, unified, items)
 }

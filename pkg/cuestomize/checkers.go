@@ -13,11 +13,6 @@ const (
 	ValidatorAnnotationKey = "config.cuestomize.io/validator"
 	// ValidatorAnnotationValue is the value of the annotation that marks a CUE function as a validator.
 	ValidatorAnnotationValue = "true"
-
-	// EditStreamAnnotationKey is the annotation key that allows Cuestomize to edit resources in place.
-	EditStreamAnnotationKey = "config.cuestomize.io/edit-stream"
-	// EditStreamAnnotationValue is the value of the annotation that allows Cuestomize to edit resources in place.
-	EditStreamAnnotationValue = "true"
 )
 
 // CheckInstances checks if any of the instances have an error and returns an error if so.
@@ -36,10 +31,4 @@ func CheckInstances(ctx context.Context, instances []*build.Instance) error {
 func ShouldActAsValidator(config *api.KRMInput) bool {
 	return config.Annotations != nil &&
 		config.Annotations[ValidatorAnnotationKey] == ValidatorAnnotationValue
-}
-
-// AllowEditResourcesInStream checks if the KRMInput configuration has the edit stream annotation set.
-func AllowEditResourcesInStream(config *api.KRMInput) bool {
-	return config.Annotations != nil &&
-		config.Annotations[EditStreamAnnotationKey] == EditStreamAnnotationValue
 }
