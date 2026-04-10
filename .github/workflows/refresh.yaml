@@ -16,9 +16,11 @@ jobs:
     steps:
     - name: Get Latest Version
       id: get-version
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         # get the latest version from the latest release, or use "nightly" if there are no releases
-        VERSION=$(curl --silent "https://api.github.com/repos/Workday/cuestomize/releases/latest" | jq -r '.tag_name')
+        VERSION=$(gh api "/repos/Workday/cuestomize/releases/latest" | jq -r '.tag_name')
         if [ -z "$VERSION" ] || [ "$VERSION" == "null" ]; then
           exit 1
         fi
@@ -35,6 +37,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
+      with:
+        ref: ${{ needs.prep.outputs.version }}
 
     - name: Dagger Build And Publish
       uses: dagger/dagger-for-github@v8.4.1
@@ -46,6 +50,6 @@ jobs:
         REPOSITORY: "workday/cuestomize"
         PLATFORMS: "linux/amd64,linux/arm64"
       with:
-        version: "0.23.3"
+        version: "0.20.3"
         verb: call
         args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
