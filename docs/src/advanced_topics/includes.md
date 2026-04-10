@@ -158,7 +158,7 @@ _#ExtractNs: {
 	], 1)
 
 	if len(_resources) != 1 {
-		error("Expected 1 resource of kind \(in.kind) in namespace \(in.namespace), but found \(len(_resources))")
+		error("Expected 1 resource of kind \(i.kind) in namespace \(i.namespace), but found \(len(_resources))")
 	}
 	out: _resources[0]
 }
