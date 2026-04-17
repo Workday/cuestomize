@@ -66,7 +66,7 @@ jobs:
         REPOSITORY: workday/cuestomize
         PLATFORMS: linux/amd64,linux/arm64
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
 
@@ -90,6 +90,6 @@ jobs:
         VERSION: ${{ needs.prep.outputs.version }}
         LATEST: ${{ needs.prep.outputs.latest }}
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --version="$VERSION" --latest="$LATEST" --repositoryPrefix="$REPOSITORY_PREFIX"
