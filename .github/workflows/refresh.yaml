@@ -37,8 +37,6 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
-      with:
-        ref: ${{ needs.prep.outputs.version }}
 
     - name: Dagger Build And Publish
       uses: dagger/dagger-for-github@v8.4.1
@@ -52,4 +50,4 @@ jobs:
       with:
         version: "0.20.5"
         verb: call
-        args: build-and-publish --repository="$REPOSITORY" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
+        args: build-and-publish --repository="$REPOSITORY" --ref="$VERSION" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
