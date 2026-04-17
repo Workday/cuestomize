@@ -31,9 +31,6 @@ func (m *Cuestomize) Build(
 
 	git := FromDirectory(buildContext)
 
-	ctx, sp := Tracer().Start(ctx, "building Cuestomize image")
-	defer sp.End()
-
 	if ref != "" {
 		git.Stash(ctx)
 
@@ -44,7 +41,6 @@ func (m *Cuestomize) Build(
 
 	commit, err := git.Head().Commit(ctx)
 	if err != nil {
-		sp.RecordError(fmt.Errorf("failed to get git commit: %w", err))
 		return nil
 	}
 
