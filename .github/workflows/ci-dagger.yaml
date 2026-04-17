@@ -20,7 +20,7 @@ jobs:
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: golangci-lint-run
 
@@ -36,7 +36,7 @@ jobs:
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: test-with-coverage
 
@@ -52,7 +52,7 @@ jobs:
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: e-2-e-test
 
@@ -68,6 +68,6 @@ jobs:
     - name: Build image
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.3"
+        version: "0.20.5"
         verb: call
         args: build
