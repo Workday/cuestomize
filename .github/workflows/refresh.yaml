@@ -37,6 +37,8 @@ jobs:
     steps:
     - name: Checkout repository
       uses: actions/checkout@v6
+      with:
+        fetch-tags: true
 
     - name: Dagger Build And Publish
       uses: dagger/dagger-for-github@v8.4.1
