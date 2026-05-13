@@ -1,6 +1,6 @@
 module github.com/Workday/cuestomize
 
-go 1.26.0
+go 1.26.2
 
 require (
 	cuelang.org/go v0.16.1
