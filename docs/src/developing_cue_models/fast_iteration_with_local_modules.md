@@ -45,7 +45,7 @@ metadata:
         mounts:
         - type: bind
           src: ./cue
-          dst: /cue-resources # this is where the Cuestomize expects the CUE module to be
+          dst: /tmp/cue-resources # this is where the Cuestomize expects the CUE module to be
 input: {} # your input configuration
 ```
 
