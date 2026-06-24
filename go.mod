@@ -6,9 +6,9 @@ require (
 	cuelang.org/go v0.16.1
 	github.com/go-logr/logr v1.4.3
 	github.com/stretchr/testify v1.11.1
-	k8s.io/api v0.36.1
-	k8s.io/apimachinery v0.36.1
-	k8s.io/kube-openapi v0.0.0-20260509192518-b540ad9def2b
+	k8s.io/api v0.36.2
+	k8s.io/apimachinery v0.36.2
+	k8s.io/kube-openapi v0.0.0-20260603220949-865597e52e25
 	oras.land/oras-go/v2 v2.6.0
 	sigs.k8s.io/kustomize/api v0.21.1
 	sigs.k8s.io/kustomize/kyaml v0.21.1
