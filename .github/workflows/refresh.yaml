@@ -36,7 +36,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         fetch-tags: true
 
@@ -50,6 +50,6 @@ jobs:
         REPOSITORY: "workday/cuestomize"
         PLATFORMS: "linux/amd64,linux/arm64"
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: build-and-publish --repository="$REPOSITORY" --ref="$VERSION" --version="$VERSION" --latest="$LATEST" --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --platforms="$PLATFORMS"
