@@ -13,13 +13,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
 
     - name: Renovate
       uses: dagger/dagger-for-github@v8.4.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: renovate --github-token=env://GITHUB_TOKEN

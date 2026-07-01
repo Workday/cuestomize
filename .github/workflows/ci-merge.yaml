@@ -12,12 +12,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Build image
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: build --ldflags="-s -w"
 
@@ -27,12 +27,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: test-with-coverage
 
@@ -42,12 +42,12 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: e-2-e-test
 
@@ -59,7 +59,7 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
 
     - name: Run pipeline
       uses: dagger/dagger-for-github@v8.4.1
@@ -68,6 +68,6 @@ jobs:
         GITHUB_USER: ${{ github.actor }}
         REPOSITORY_PREFIX: ${{ github.repository }}/cuemodules/cuestomize-examples
       with:
-        version: "0.20.5"
+        version: "0.21.7"
         verb: call
         args: publish-examples --username="$GITHUB_USER" --password=env:GITHUB_TOKEN --repositoryPrefix="$REPOSITORY_PREFIX"
