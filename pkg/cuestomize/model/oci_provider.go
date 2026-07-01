@@ -18,12 +18,15 @@ import (
 // OCIOption defines a functional option for configuring OCIModelProvider.
 type OCIOption func(*ociModelProviderOptions)
 
+type postFetchFunc = func(ctx context.Context, p *OCIModelProvider) error
+
 // ociModelProviderOptions holds configuration options for OCIModelProvider.
 type ociModelProviderOptions struct {
-	Reference  registry.Reference
-	PlainHTTP  bool
-	Client     *auth.Client
-	WorkingDir string
+	Reference     registry.Reference
+	PlainHTTP     bool
+	Client        *auth.Client
+	WorkingDir    string
+	postFetchFunc postFetchFunc
 }
 
 // WithRemoteParts configures the OCI remote to fetch the CUE model from an OCI registry.
@@ -70,15 +73,64 @@ func WithClient(client *auth.Client) OCIOption {
 	}
 }
 
-// OCIModelProvider is a model provider that fetches the CUE model from an OCI registry.
-type OCIModelProvider struct {
-	reference  registry.Reference
-	plainHTTP  bool
-	workingDir string
-	client     *auth.Client
+// WithPostFetchFunc configures a post-fetch function that will be called after the CUE model is fetched from the OCI registry. This can be used to perform
+// additional processing on the fetched artifact.
+func WithPostFetchFunc(postFetchFunc postFetchFunc) OCIOption {
+	return func(opts *ociModelProviderOptions) {
+		opts.postFetchFunc = postFetchFunc
+	}
 }
 
-// NewOCIModelProviderFromConfigAndItems creates a new OCIModelProvider based on the provided KRMInput configuration and input items.
+// WithUnpackArchivePostFetch configures a post-fetch function that checks if the fetched artifact is a compressed tarball and, if so, decompresses it in place.
+// If the artifact is not a compressed tarball, this function does nothing. This is a best-effort attempt to support both plain directories and tarballs artifacts.
+func WithUnpackArchivePostFetch() OCIOption {
+	return WithPostFetchFunc(func(ctx context.Context, p *OCIModelProvider) error {
+		log := logr.FromContextOrDiscard(ctx)
+
+		// check if we pulled a compressed tarball and if so, attempt to decompress it in place
+		// this is a best effort attempt to support both plain directories and compressed tarballs as OCI artifacts
+		// without requiring users to specify the format of the artifact in the configuration
+		entries, err := os.ReadDir(p.workingDir)
+		if err != nil {
+			return fmt.Errorf("failed to read working directory: %w", err)
+		}
+
+		log.Info("fetched CUE model from OCI registry", "entries", func() []string {
+			names := make([]string, len(entries))
+			for i, entry := range entries {
+				names[i] = entry.Name()
+			}
+			return names
+		}())
+
+		if len(entries) == 1 && !entries[0].IsDir() && files.IsArchive(entries[0].Name()) {
+			archivePath := filepath.Join(p.workingDir, entries[0].Name())
+			wdir, err := filepath.Abs(p.workingDir)
+			if err != nil {
+				return fmt.Errorf("failed to get absolute path of working directory: %w", err)
+			}
+			log.Info("detected archive, attempting to decompress", "archive", archivePath)
+			err = files.Untar(archivePath, wdir, files.RemoveArchive(true))
+			if err != nil {
+				return fmt.Errorf("failed to decompress archive: %w", err)
+			}
+		}
+
+		return nil
+	})
+}
+
+// OCIModelProvider is a model provider that fetches the CUE model from an OCI registry.
+type OCIModelProvider struct {
+	reference     registry.Reference
+	plainHTTP     bool
+	workingDir    string
+	client        *auth.Client
+	postFetchFunc postFetchFunc
+}
+
+// NewOCIModelProviderFromConfigAndItems creates a new OCIModelProvider based on the provided KRMInput configuration and options.
+// Options can be used to override default behavior, such as the working directory, post-fetch processing, etc.
 func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.RNode, opts ...OCIOption) (*OCIModelProvider, error) {
 	if config.RemoteModule == nil {
 		return nil, fmt.Errorf("remote module configuration is missing")
@@ -88,7 +140,7 @@ func NewOCIModelProviderFromConfigAndItems(config *api.KRMInput, items []*kyaml.
 		return nil, fmt.Errorf("failed to configure remote client: %w", err)
 	}
 
-	reference, err := config.RemoteModule.GetReference()
+	reference, err := config.RemoteModule.ParseReference()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get reference: %w", err)
 	}
@@ -120,10 +172,11 @@ func New(opts ...OCIOption) (*OCIModelProvider, error) {
 	}
 
 	return &OCIModelProvider{
-		reference:  options.Reference,
-		plainHTTP:  options.PlainHTTP,
-		workingDir: options.WorkingDir,
-		client:     options.Client,
+		reference:     options.Reference,
+		plainHTTP:     options.PlainHTTP,
+		workingDir:    options.WorkingDir,
+		client:        options.Client,
+		postFetchFunc: options.postFetchFunc,
 	}, nil
 }
 
@@ -151,32 +204,9 @@ func (p *OCIModelProvider) Get(ctx context.Context) error {
 		return fmt.Errorf("failed to fetch from OCI registry: %w", err)
 	}
 
-	// check if we pulled a compressed tarball and if so, attempt to decompress it in place
-	// this is a best effort attempt to support both plain directories and compressed tarballs as OCI artifacts
-	// without requiring users to specify the format of the artifact in the configuration
-	entries, err := os.ReadDir(p.workingDir)
-	if err != nil {
-		return fmt.Errorf("failed to read working directory: %w", err)
-	}
-
-	log.Info("fetched CUE model from OCI registry", "entries", func() []string {
-		names := make([]string, len(entries))
-		for i, entry := range entries {
-			names[i] = entry.Name()
-		}
-		return names
-	}())
-
-	if len(entries) == 1 && !entries[0].IsDir() && files.IsArchive(entries[0].Name()) {
-		archivePath := filepath.Join(p.workingDir, entries[0].Name())
-		wdir, err := filepath.Abs(p.workingDir)
-		if err != nil {
-			return fmt.Errorf("failed to get absolute path of working directory: %w", err)
-		}
-		log.Info("detected archive, attempting to decompress", "archive", archivePath)
-		err = files.Untar(archivePath, wdir, files.RemoveArchive(true))
-		if err != nil {
-			return fmt.Errorf("failed to decompress archive: %w", err)
+	if p.postFetchFunc != nil {
+		if err := p.postFetchFunc(ctx, p); err != nil {
+			return fmt.Errorf("post-fetch function failed: %w", err)
 		}
 	}
 

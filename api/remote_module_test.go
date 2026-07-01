@@ -103,7 +103,7 @@ func TestRemoteModule_GetReference(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			ref, err := tt.module.GetReference()
+			ref, err := tt.module.ParseReference()
 
 			if tt.wantErr {
 				require.Error(t, err)
@@ -124,7 +124,7 @@ func TestRemoteModule_BackwardsCompatibility(t *testing.T) {
 			Tag:      "v1.0.0",
 		}
 
-		ref, err := module.GetReference()
+		ref, err := module.ParseReference()
 		require.NoError(t, err, "GetReference() unexpected error = %v", err)
 
 		assert.Equal(t, "ghcr.io", ref.Registry)
@@ -140,7 +140,7 @@ func TestRemoteModule_BackwardsCompatibility(t *testing.T) {
 			Tag:      "v1.0.0",
 		}
 
-		ref, err := module.GetReference()
+		ref, err := module.ParseReference()
 		require.NoError(t, err)
 
 		assert.Equal(t, "new-registry.io", ref.Registry)

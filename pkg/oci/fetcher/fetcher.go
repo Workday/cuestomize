@@ -25,6 +25,7 @@ func FetchFromOCIRegistry(ctx context.Context, client remote.Client, workingDir 
 	if err != nil {
 		return err
 	}
+
 	if client != nil {
 		repository.Client = client
 	}

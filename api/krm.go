@@ -76,7 +76,7 @@ func (i *KRMInput) GetRemoteClient(items []*kyaml.RNode) (*auth.Client, error) {
 		}
 	}
 
-	reference, err := i.RemoteModule.GetReference()
+	reference, err := i.RemoteModule.ParseReference()
 	if err != nil {
 		return nil, fmt.Errorf("failed to get reference: %w", err)
 	}
