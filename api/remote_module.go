@@ -31,7 +31,7 @@ type RemoteModule struct {
 	PlainHTTP bool            `yaml:"plainHTTP,omitempty" json:"plainHTTP,omitempty"`
 }
 
-func (r *RemoteModule) GetReference() (registry.Reference, error) {
+func (r *RemoteModule) ParseReference() (registry.Reference, error) {
 	if r.Ref != "" {
 		return registry.ParseReference(r.Ref)
 	}
