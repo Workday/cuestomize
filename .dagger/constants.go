@@ -18,7 +18,7 @@ const (
 	// GolangciLintImage is the GolangCI-Lint image used by default
 	GolangciLintImage = "golangci/golangci-lint:v2.12.2-alpine"
 	// GitImage is the image used for Git operations in Dagger
-	GitImage = "alpine/git:2.52.0"
+	GitImage = "alpine/git:v2.54.0"
 )
 
 const (
