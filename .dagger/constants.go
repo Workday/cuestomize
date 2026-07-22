@@ -14,7 +14,7 @@ const (
 	// KustomizeImage is the Kustomize image
 	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.8.1"
 	// CuelangVersion is the version of Cuelang
-	CuelangVersion = "v0.16.1"
+	CuelangVersion = "v0.17.1"
 	// GolangciLintImage is the GolangCI-Lint image used by default
 	GolangciLintImage = "golangci/golangci-lint:v2.12.2-alpine"
 	// GitImage is the image used for Git operations in Dagger
