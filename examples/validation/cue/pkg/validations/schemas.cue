@@ -1,9 +1,9 @@
 package validations
 
 import (
-	api "k8s.io/api/core/v1"
-	apps "k8s.io/api/apps/v1"
-	batch "k8s.io/api/batch/v1"
+	api "cue.dev/x/k8s.io/api/core/v1"
+	apps "cue.dev/x/k8s.io/api/apps/v1"
+	batch "cue.dev/x/k8s.io/api/batch/v1"
 )
 
 // #STIGPod is a Kubernetes Pod respecting STIG requirements
