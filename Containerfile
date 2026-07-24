@@ -21,6 +21,8 @@ RUN CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "$LDFLAGS" -o 
 
 FROM gcr.io/distroless/static:latest
 
+ENV CUE_CACHE_DIR=/tmp/cue-cache
+
 COPY --from=builder /workspace/cuestomize /usr/local/bin/cuestomize
 
 ENTRYPOINT ["/usr/local/bin/cuestomize"]
