@@ -1,7 +1,7 @@
 package validations
 
 import (
-	api "k8s.io/api/core/v1"
+	api "cue.dev/x/k8s.io/api/core/v1"
 )
 
 #STIGPodSpec: api.#PodSpec & {
