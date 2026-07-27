@@ -15,8 +15,6 @@ require (
 	sigs.k8s.io/yaml v1.6.0
 )
 
-require github.com/go-openapi/swag/pools v0.27.1 // indirect
-
 require (
 	cuelabs.dev/go/oci/ociregistry v0.0.0-20260601085548-328ff8e2c943 // indirect
 	github.com/cockroachdb/apd/v3 v3.2.3 // indirect
@@ -34,6 +32,7 @@ require (
 	github.com/go-openapi/swag/loading v0.27.1 // indirect
 	github.com/go-openapi/swag/mangling v0.27.1 // indirect
 	github.com/go-openapi/swag/netutils v0.27.1 // indirect
+	github.com/go-openapi/swag/pools v0.27.1 // indirect
 	github.com/go-openapi/swag/stringutils v0.27.1 // indirect
 	github.com/go-openapi/swag/typeutils v0.27.1 // indirect
 	github.com/go-openapi/swag/yamlutils v0.27.1 // indirect
