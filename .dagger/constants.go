@@ -9,8 +9,6 @@ const (
 	GolangImage = "golang:1.26"
 	// RegistryImage is image for local container registry
 	RegistryImage = "registry:3"
-	// DistrolessStaticImage is the distroless static image
-	DistrolessStaticImage = "gcr.io/distroless/static:latest"
 	// KustomizeImage is the Kustomize image
 	KustomizeImage = "registry.k8s.io/kustomize/kustomize:v5.8.1"
 	// CuelangVersion is the version of Cuelang

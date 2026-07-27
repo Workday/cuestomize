@@ -9,7 +9,6 @@
             "matchStrings": [
                 "GolangImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "RegistryImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
-                "DistrolessStaticImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "KustomizeImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "GolangciLintImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\"",
                 "GitImage\\s*=\\s*\"(?<depName>[\\w/-]+)[:@](?<currentValue>.*?)\""
