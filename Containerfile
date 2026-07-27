@@ -19,7 +19,7 @@ ADD main.go main.go
 RUN CGO_ENABLED=0 GOOS="$GOOS" GOARCH="$GOARCH" go build -ldflags "$LDFLAGS" -o cuestomize main.go
 
 
-FROM gcr.io/distroless/static:latest
+FROM gcr.io/distroless/static:nonroot
 
 ENV CUE_CACHE_DIR=/tmp/cue-cache
 
