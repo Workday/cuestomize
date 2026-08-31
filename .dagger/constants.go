@@ -6,7 +6,7 @@ import "dagger/cuestomize/internal/dagger"
 // as they are updated in there through regexes.
 const (
 	// GolangImage is the Golang base image
-	GolangImage = "golang:1.26"
+	GolangImage = "golang:1.27"
 	// RegistryImage is image for local container registry
 	RegistryImage = "registry:3"
 	// KustomizeImage is the Kustomize image
